@@ -1,0 +1,3880 @@
+[
+  {
+    "code": "COMPSCI200",
+    "name": "PROGRAMMING I",
+    "credits": 3,
+    "difficulty": 2,
+    "tags": [
+      "lines programs",
+      "learn process",
+      "incrementally developing",
+      "computer science",
+      "programming practices"
+    ],
+    "breadth": "Natural Science",
+    "genEd": [
+      "GenEd"
+    ],
+    "creditType": "L&S",
+    "prerequisites": [],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Fri",
+            "startTime": "09:55",
+            "endTime": "10:45"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 3.23
+  },
+  {
+    "code": "COMPSCI220",
+    "name": "DATA SCIENCE PROGRAMMING I",
+    "credits": 4,
+    "difficulty": 2,
+    "tags": [
+      "data",
+      "datasets variety",
+      "science programming",
+      "real datasets",
+      "using python"
+    ],
+    "breadth": "Natural Science",
+    "genEd": [
+      "GenEd"
+    ],
+    "creditType": "L&S",
+    "prerequisites": [],
+    "sections": [
+      {
+        "sectionId": "002",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Mon",
+            "startTime": "11:00",
+            "endTime": "12:30"
+          },
+          {
+            "day": "Tue",
+            "startTime": "11:00",
+            "endTime": "12:30"
+          },
+          {
+            "day": "Wed",
+            "startTime": "11:00",
+            "endTime": "12:30"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 3.43
+  },
+  {
+    "code": "COMPSCI240",
+    "name": "INTRODUCTION TO DISCRETE MATHEMATICS",
+    "credits": 3,
+    "difficulty": 2,
+    "tags": [
+      "mathematical",
+      "definitions proofs",
+      "fundamentals counting",
+      "basic concepts",
+      "logic sets"
+    ],
+    "breadth": "Natural Science",
+    "creditType": "L&S",
+    "prerequisites": [
+      "MATH221"
+    ],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Mon",
+            "startTime": "09:00",
+            "endTime": "10:15"
+          },
+          {
+            "day": "Tue",
+            "startTime": "09:00",
+            "endTime": "10:15"
+          },
+          {
+            "day": "Wed",
+            "startTime": "09:00",
+            "endTime": "10:15"
+          },
+          {
+            "day": "Thu",
+            "startTime": "09:00",
+            "endTime": "10:15"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 3.08
+  },
+  {
+    "code": "COMPSCI252",
+    "name": "INTRODUCTION TO COMPUTER ENGINEERING",
+    "credits": 3,
+    "difficulty": 2,
+    "tags": [
+      "components",
+      "built transistors",
+      "basic",
+      "introductory machine",
+      "logic design"
+    ],
+    "breadth": "Natural Science",
+    "creditType": "L&S",
+    "prerequisites": [],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Mon",
+            "startTime": "15:00",
+            "endTime": "15:50"
+          },
+          {
+            "day": "Tue",
+            "startTime": "15:00",
+            "endTime": "15:50"
+          },
+          {
+            "day": "Wed",
+            "startTime": "15:00",
+            "endTime": "15:50"
+          },
+          {
+            "day": "Thu",
+            "startTime": "15:00",
+            "endTime": "15:50"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 3.29
+  },
+  {
+    "code": "COMPSCI320",
+    "name": "DATA SCIENCE PROGRAMMING II",
+    "credits": 4,
+    "difficulty": 2,
+    "tags": [
+      "represent datasets",
+      "control python",
+      "science programming",
+      "python experience",
+      "data science"
+    ],
+    "breadth": "Natural Science",
+    "creditType": "L&S",
+    "prerequisites": [
+      "COMPSCI319"
+    ],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Mon",
+            "startTime": "15:00",
+            "endTime": "16:15"
+          },
+          {
+            "day": "Tue",
+            "startTime": "15:00",
+            "endTime": "16:15"
+          },
+          {
+            "day": "Wed",
+            "startTime": "15:00",
+            "endTime": "16:15"
+          },
+          {
+            "day": "Thu",
+            "startTime": "15:00",
+            "endTime": "16:15"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 3.53
+  },
+  {
+    "code": "ENGL100",
+    "name": "INTRODUCTION TO COLLEGE COMPOSITION",
+    "credits": 3,
+    "difficulty": 1,
+    "tags": [
+      "emphasis writing",
+      "development rhetorical",
+      "listening writing",
+      "information literacy",
+      "literacy provides"
+    ],
+    "breadth": "Humanities",
+    "genEd": [
+      "GenEd"
+    ],
+    "creditType": "L&S",
+    "prerequisites": [
+      "ESL118"
+    ],
+    "sections": [
+      {
+        "sectionId": "070",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          },
+          {
+            "day": "Thu",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          }
+        ]
+      },
+      {
+        "sectionId": "008",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "08:50",
+            "endTime": "09:40"
+          },
+          {
+            "day": "Fri",
+            "startTime": "08:50",
+            "endTime": "09:40"
+          },
+          {
+            "day": "Mon",
+            "startTime": "08:50",
+            "endTime": "09:40"
+          }
+        ]
+      },
+      {
+        "sectionId": "027",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "12:05",
+            "endTime": "12:55"
+          },
+          {
+            "day": "Fri",
+            "startTime": "12:05",
+            "endTime": "12:55"
+          },
+          {
+            "day": "Mon",
+            "startTime": "12:05",
+            "endTime": "12:55"
+          }
+        ]
+      },
+      {
+        "sectionId": "078",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "16:00",
+            "endTime": "17:15"
+          },
+          {
+            "day": "Mon",
+            "startTime": "16:00",
+            "endTime": "17:15"
+          }
+        ]
+      },
+      {
+        "sectionId": "094",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Mon",
+            "startTime": "08:30",
+            "endTime": "11:00"
+          }
+        ]
+      },
+      {
+        "sectionId": "069",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "08:50",
+            "endTime": "09:40"
+          },
+          {
+            "day": "Fri",
+            "startTime": "08:50",
+            "endTime": "09:40"
+          },
+          {
+            "day": "Mon",
+            "startTime": "08:50",
+            "endTime": "09:40"
+          }
+        ]
+      },
+      {
+        "sectionId": "074",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "09:30",
+            "endTime": "10:45"
+          },
+          {
+            "day": "Thu",
+            "startTime": "09:30",
+            "endTime": "10:45"
+          }
+        ]
+      },
+      {
+        "sectionId": "073",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "09:30",
+            "endTime": "10:45"
+          },
+          {
+            "day": "Thu",
+            "startTime": "09:30",
+            "endTime": "10:45"
+          }
+        ]
+      },
+      {
+        "sectionId": "049",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "09:30",
+            "endTime": "10:45"
+          },
+          {
+            "day": "Thu",
+            "startTime": "09:30",
+            "endTime": "10:45"
+          }
+        ]
+      },
+      {
+        "sectionId": "056",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "09:30",
+            "endTime": "10:45"
+          },
+          {
+            "day": "Thu",
+            "startTime": "09:30",
+            "endTime": "10:45"
+          }
+        ]
+      },
+      {
+        "sectionId": "048",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "09:30",
+            "endTime": "10:45"
+          },
+          {
+            "day": "Thu",
+            "startTime": "09:30",
+            "endTime": "10:45"
+          }
+        ]
+      },
+      {
+        "sectionId": "076",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "11:00",
+            "endTime": "12:15"
+          },
+          {
+            "day": "Thu",
+            "startTime": "11:00",
+            "endTime": "12:15"
+          }
+        ]
+      },
+      {
+        "sectionId": "050",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "11:00",
+            "endTime": "12:15"
+          },
+          {
+            "day": "Thu",
+            "startTime": "11:00",
+            "endTime": "12:15"
+          }
+        ]
+      },
+      {
+        "sectionId": "058",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "11:00",
+            "endTime": "12:15"
+          },
+          {
+            "day": "Thu",
+            "startTime": "11:00",
+            "endTime": "12:15"
+          }
+        ]
+      },
+      {
+        "sectionId": "057",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "11:00",
+            "endTime": "12:15"
+          },
+          {
+            "day": "Thu",
+            "startTime": "11:00",
+            "endTime": "12:15"
+          }
+        ]
+      },
+      {
+        "sectionId": "051",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "11:00",
+            "endTime": "12:15"
+          },
+          {
+            "day": "Thu",
+            "startTime": "11:00",
+            "endTime": "12:15"
+          }
+        ]
+      },
+      {
+        "sectionId": "053",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "13:00",
+            "endTime": "14:15"
+          },
+          {
+            "day": "Thu",
+            "startTime": "13:00",
+            "endTime": "14:15"
+          }
+        ]
+      },
+      {
+        "sectionId": "059",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "13:00",
+            "endTime": "14:15"
+          },
+          {
+            "day": "Thu",
+            "startTime": "13:00",
+            "endTime": "14:15"
+          }
+        ]
+      },
+      {
+        "sectionId": "033",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "13:00",
+            "endTime": "14:15"
+          },
+          {
+            "day": "Thu",
+            "startTime": "13:00",
+            "endTime": "14:15"
+          }
+        ]
+      },
+      {
+        "sectionId": "034",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "13:00",
+            "endTime": "14:15"
+          },
+          {
+            "day": "Thu",
+            "startTime": "13:00",
+            "endTime": "14:15"
+          }
+        ]
+      },
+      {
+        "sectionId": "052",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "13:00",
+            "endTime": "14:15"
+          },
+          {
+            "day": "Thu",
+            "startTime": "13:00",
+            "endTime": "14:15"
+          }
+        ]
+      },
+      {
+        "sectionId": "060",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          },
+          {
+            "day": "Thu",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          }
+        ]
+      },
+      {
+        "sectionId": "071",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          },
+          {
+            "day": "Thu",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          }
+        ]
+      },
+      {
+        "sectionId": "065",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          },
+          {
+            "day": "Thu",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          }
+        ]
+      },
+      {
+        "sectionId": "024",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "16:00",
+            "endTime": "17:15"
+          },
+          {
+            "day": "Thu",
+            "startTime": "16:00",
+            "endTime": "17:15"
+          }
+        ]
+      },
+      {
+        "sectionId": "082",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "16:00",
+            "endTime": "17:15"
+          },
+          {
+            "day": "Thu",
+            "startTime": "16:00",
+            "endTime": "17:15"
+          }
+        ]
+      },
+      {
+        "sectionId": "084",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "17:30",
+            "endTime": "18:45"
+          },
+          {
+            "day": "Thu",
+            "startTime": "17:30",
+            "endTime": "18:45"
+          }
+        ]
+      },
+      {
+        "sectionId": "085",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "17:30",
+            "endTime": "18:45"
+          },
+          {
+            "day": "Thu",
+            "startTime": "17:30",
+            "endTime": "18:45"
+          }
+        ]
+      },
+      {
+        "sectionId": "054",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "08:50",
+            "endTime": "09:40"
+          },
+          {
+            "day": "Fri",
+            "startTime": "08:50",
+            "endTime": "09:40"
+          },
+          {
+            "day": "Mon",
+            "startTime": "08:50",
+            "endTime": "09:40"
+          }
+        ]
+      },
+      {
+        "sectionId": "012",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "09:55",
+            "endTime": "10:45"
+          },
+          {
+            "day": "Fri",
+            "startTime": "09:55",
+            "endTime": "10:45"
+          },
+          {
+            "day": "Mon",
+            "startTime": "09:55",
+            "endTime": "10:45"
+          }
+        ]
+      },
+      {
+        "sectionId": "010",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "09:55",
+            "endTime": "10:45"
+          },
+          {
+            "day": "Fri",
+            "startTime": "09:55",
+            "endTime": "10:45"
+          },
+          {
+            "day": "Mon",
+            "startTime": "09:55",
+            "endTime": "10:45"
+          }
+        ]
+      },
+      {
+        "sectionId": "015",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "09:55",
+            "endTime": "10:45"
+          },
+          {
+            "day": "Fri",
+            "startTime": "09:55",
+            "endTime": "10:45"
+          },
+          {
+            "day": "Mon",
+            "startTime": "09:55",
+            "endTime": "10:45"
+          }
+        ]
+      },
+      {
+        "sectionId": "011",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "09:55",
+            "endTime": "10:45"
+          },
+          {
+            "day": "Fri",
+            "startTime": "09:55",
+            "endTime": "10:45"
+          },
+          {
+            "day": "Mon",
+            "startTime": "09:55",
+            "endTime": "10:45"
+          }
+        ]
+      },
+      {
+        "sectionId": "016",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "09:55",
+            "endTime": "10:45"
+          },
+          {
+            "day": "Fri",
+            "startTime": "09:55",
+            "endTime": "10:45"
+          },
+          {
+            "day": "Mon",
+            "startTime": "09:55",
+            "endTime": "10:45"
+          }
+        ]
+      },
+      {
+        "sectionId": "020",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "11:00",
+            "endTime": "11:50"
+          },
+          {
+            "day": "Fri",
+            "startTime": "11:00",
+            "endTime": "11:50"
+          },
+          {
+            "day": "Mon",
+            "startTime": "11:00",
+            "endTime": "11:50"
+          }
+        ]
+      },
+      {
+        "sectionId": "018",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "11:00",
+            "endTime": "11:50"
+          },
+          {
+            "day": "Fri",
+            "startTime": "11:00",
+            "endTime": "11:50"
+          },
+          {
+            "day": "Mon",
+            "startTime": "11:00",
+            "endTime": "11:50"
+          }
+        ]
+      },
+      {
+        "sectionId": "019",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "11:00",
+            "endTime": "11:50"
+          },
+          {
+            "day": "Fri",
+            "startTime": "11:00",
+            "endTime": "11:50"
+          },
+          {
+            "day": "Mon",
+            "startTime": "11:00",
+            "endTime": "11:50"
+          }
+        ]
+      },
+      {
+        "sectionId": "021",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "11:00",
+            "endTime": "11:50"
+          },
+          {
+            "day": "Fri",
+            "startTime": "11:00",
+            "endTime": "11:50"
+          },
+          {
+            "day": "Mon",
+            "startTime": "11:00",
+            "endTime": "11:50"
+          }
+        ]
+      },
+      {
+        "sectionId": "029",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "12:05",
+            "endTime": "12:55"
+          },
+          {
+            "day": "Fri",
+            "startTime": "12:05",
+            "endTime": "12:55"
+          },
+          {
+            "day": "Mon",
+            "startTime": "12:05",
+            "endTime": "12:55"
+          }
+        ]
+      },
+      {
+        "sectionId": "026",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "12:05",
+            "endTime": "12:55"
+          },
+          {
+            "day": "Fri",
+            "startTime": "12:05",
+            "endTime": "12:55"
+          },
+          {
+            "day": "Mon",
+            "startTime": "12:05",
+            "endTime": "12:55"
+          }
+        ]
+      },
+      {
+        "sectionId": "025",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "12:05",
+            "endTime": "12:55"
+          },
+          {
+            "day": "Fri",
+            "startTime": "12:05",
+            "endTime": "12:55"
+          },
+          {
+            "day": "Mon",
+            "startTime": "12:05",
+            "endTime": "12:55"
+          }
+        ]
+      },
+      {
+        "sectionId": "086",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "12:05",
+            "endTime": "12:55"
+          },
+          {
+            "day": "Fri",
+            "startTime": "12:05",
+            "endTime": "12:55"
+          },
+          {
+            "day": "Mon",
+            "startTime": "12:05",
+            "endTime": "12:55"
+          }
+        ]
+      },
+      {
+        "sectionId": "037",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "13:20",
+            "endTime": "14:10"
+          },
+          {
+            "day": "Fri",
+            "startTime": "13:20",
+            "endTime": "14:10"
+          },
+          {
+            "day": "Mon",
+            "startTime": "13:20",
+            "endTime": "14:10"
+          }
+        ]
+      },
+      {
+        "sectionId": "039",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "13:20",
+            "endTime": "14:10"
+          },
+          {
+            "day": "Fri",
+            "startTime": "13:20",
+            "endTime": "14:10"
+          },
+          {
+            "day": "Mon",
+            "startTime": "13:20",
+            "endTime": "14:10"
+          }
+        ]
+      },
+      {
+        "sectionId": "067",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "13:20",
+            "endTime": "14:10"
+          },
+          {
+            "day": "Fri",
+            "startTime": "13:20",
+            "endTime": "14:10"
+          },
+          {
+            "day": "Mon",
+            "startTime": "13:20",
+            "endTime": "14:10"
+          }
+        ]
+      },
+      {
+        "sectionId": "038",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "13:20",
+            "endTime": "14:10"
+          },
+          {
+            "day": "Fri",
+            "startTime": "13:20",
+            "endTime": "14:10"
+          },
+          {
+            "day": "Mon",
+            "startTime": "13:20",
+            "endTime": "14:10"
+          }
+        ]
+      },
+      {
+        "sectionId": "036",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "13:20",
+            "endTime": "14:10"
+          },
+          {
+            "day": "Fri",
+            "startTime": "13:20",
+            "endTime": "14:10"
+          },
+          {
+            "day": "Mon",
+            "startTime": "13:20",
+            "endTime": "14:10"
+          }
+        ]
+      },
+      {
+        "sectionId": "043",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          },
+          {
+            "day": "Mon",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          }
+        ]
+      },
+      {
+        "sectionId": "040",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          },
+          {
+            "day": "Mon",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          }
+        ]
+      },
+      {
+        "sectionId": "042",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          },
+          {
+            "day": "Mon",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          }
+        ]
+      },
+      {
+        "sectionId": "041",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          },
+          {
+            "day": "Mon",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          }
+        ]
+      },
+      {
+        "sectionId": "044",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          },
+          {
+            "day": "Mon",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          }
+        ]
+      },
+      {
+        "sectionId": "068",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "16:00",
+            "endTime": "17:15"
+          },
+          {
+            "day": "Mon",
+            "startTime": "16:00",
+            "endTime": "17:15"
+          }
+        ]
+      },
+      {
+        "sectionId": "045",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "16:00",
+            "endTime": "17:15"
+          },
+          {
+            "day": "Mon",
+            "startTime": "16:00",
+            "endTime": "17:15"
+          }
+        ]
+      },
+      {
+        "sectionId": "055",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "16:00",
+            "endTime": "17:15"
+          },
+          {
+            "day": "Mon",
+            "startTime": "16:00",
+            "endTime": "17:15"
+          }
+        ]
+      },
+      {
+        "sectionId": "080",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "17:30",
+            "endTime": "18:45"
+          },
+          {
+            "day": "Mon",
+            "startTime": "17:30",
+            "endTime": "18:45"
+          }
+        ]
+      },
+      {
+        "sectionId": "079",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "17:30",
+            "endTime": "18:46"
+          },
+          {
+            "day": "Mon",
+            "startTime": "17:30",
+            "endTime": "18:46"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 3.84
+  },
+  {
+    "code": "ENGL120",
+    "name": "INTRODUCTION TO THEATRE AND DRAMATIC LITERATURE",
+    "credits": 4,
+    "difficulty": 1,
+    "tags": [
+      "attending stage",
+      "drama emphasis",
+      "analytic skills",
+      "critically theatre",
+      "dramatic literature"
+    ],
+    "breadth": "Humanities",
+    "creditType": "L&S",
+    "prerequisites": [],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "11:00",
+            "endTime": "11:50"
+          },
+          {
+            "day": "Mon",
+            "startTime": "11:00",
+            "endTime": "11:50"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 3.62
+  },
+  {
+    "code": "ENGL155",
+    "name": "MYTH AND LITERATURE",
+    "credits": 3,
+    "difficulty": 1,
+    "tags": [
+      "myth",
+      "study myth",
+      "concepts myth",
+      "mythology",
+      "myths legends"
+    ],
+    "breadth": "Humanities",
+    "creditType": "L&S",
+    "prerequisites": [],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "11:00",
+            "endTime": "12:15"
+          },
+          {
+            "day": "Thu",
+            "startTime": "11:00",
+            "endTime": "12:15"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 3.89
+  },
+  {
+    "code": "ENGL167",
+    "name": "BRITISH AND AMERICAN WRITERS",
+    "credits": 3,
+    "difficulty": 1,
+    "tags": [
+      "british",
+      "introduction",
+      "british american",
+      "writers themes",
+      "literature particular"
+    ],
+    "breadth": "Humanities",
+    "creditType": "L&S",
+    "prerequisites": [],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "09:30",
+            "endTime": "10:45"
+          },
+          {
+            "day": "Thu",
+            "startTime": "09:30",
+            "endTime": "10:45"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 3.45
+  },
+  {
+    "code": "ENGL168",
+    "name": "MODERN LITERATURE",
+    "credits": 3,
+    "difficulty": 1,
+    "tags": [
+      "anglophone",
+      "writers",
+      "thematic introduction",
+      "genres",
+      "written english"
+    ],
+    "breadth": "Humanities",
+    "creditType": "L&S",
+    "prerequisites": [],
+    "sections": [
+      {
+        "sectionId": "002",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "09:30",
+            "endTime": "10:45"
+          },
+          {
+            "day": "Thu",
+            "startTime": "09:30",
+            "endTime": "10:45"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 3.39
+  },
+  {
+    "code": "ENGL169",
+    "name": "MODERN AMERICAN LITERATURE",
+    "credits": 3,
+    "difficulty": 1,
+    "tags": [
+      "early twentieth",
+      "prose",
+      "selected fiction",
+      "written americans",
+      "drama poetry"
+    ],
+    "breadth": "Humanities",
+    "creditType": "L&S",
+    "prerequisites": [],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "12:05",
+            "endTime": "12:55"
+          },
+          {
+            "day": "Thu",
+            "startTime": "12:05",
+            "endTime": "12:55"
+          }
+        ]
+      },
+      {
+        "sectionId": "002",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          },
+          {
+            "day": "Thu",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 3.52
+  },
+  {
+    "code": "ENGL173",
+    "name": "ETHNIC AND MULTICULTURAL LITERATURE",
+    "credits": 3,
+    "difficulty": 1,
+    "tags": [
+      "reflects writing",
+      "experience minority",
+      "ethnic",
+      "introduction literature",
+      "groups texts"
+    ],
+    "breadth": "Humanities",
+    "genEd": [
+      "Ethnic Studies"
+    ],
+    "creditType": "L&S",
+    "prerequisites": [],
+    "sections": [
+      {
+        "sectionId": "002",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "13:00",
+            "endTime": "14:15"
+          },
+          {
+            "day": "Thu",
+            "startTime": "13:00",
+            "endTime": "14:15"
+          }
+        ]
+      },
+      {
+        "sectionId": "003",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Mon",
+            "startTime": "14:30",
+            "endTime": "17:00"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 3.66
+  },
+  {
+    "code": "ENGL174",
+    "name": "LITERATURE AND SOCIAL JUSTICE",
+    "credits": 3,
+    "difficulty": 1,
+    "tags": [
+      "texts engage",
+      "race gender",
+      "ways writers",
+      "equality immigration",
+      "used literary"
+    ],
+    "breadth": "Humanities",
+    "creditType": "L&S",
+    "prerequisites": [],
+    "sections": [
+      {
+        "sectionId": "002",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          },
+          {
+            "day": "Thu",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          }
+        ]
+      },
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          },
+          {
+            "day": "Mon",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 3.52
+  },
+  {
+    "code": "ENGL175",
+    "name": "LITERATURE AND THE OTHER DISCIPLINES",
+    "credits": 3,
+    "difficulty": 1,
+    "tags": [
+      "disciplines selected",
+      "academic disciplines",
+      "works british",
+      "intellectual influences",
+      "american literature"
+    ],
+    "breadth": "Humanities",
+    "creditType": "L&S",
+    "prerequisites": [],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          },
+          {
+            "day": "Mon",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 3.75
+  },
+  {
+    "code": "ENGL176",
+    "name": "TOPICS IN LITERATURE AND FILM",
+    "credits": 3,
+    "difficulty": 1,
+    "tags": [
+      "film",
+      "novels stories",
+      "poems writings",
+      "english focus",
+      "introduction interplay"
+    ],
+    "breadth": "Humanities",
+    "creditType": "L&S",
+    "prerequisites": [],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "11:00",
+            "endTime": "12:15"
+          },
+          {
+            "day": "Thu",
+            "startTime": "11:00",
+            "endTime": "12:15"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 3.7
+  },
+  {
+    "code": "ENGL177",
+    "name": "LITERATURE AND POPULAR CULTURE",
+    "credits": 3,
+    "difficulty": 1,
+    "tags": [
+      "intersection",
+      "popular",
+      "media",
+      "topic studying",
+      "culture various"
+    ],
+    "breadth": "Humanities",
+    "creditType": "L&S",
+    "prerequisites": [],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "08:50",
+            "endTime": "09:40"
+          },
+          {
+            "day": "Thu",
+            "startTime": "08:50",
+            "endTime": "09:40"
+          }
+        ]
+      },
+      {
+        "sectionId": "002",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "09:55",
+            "endTime": "10:45"
+          },
+          {
+            "day": "Fri",
+            "startTime": "09:55",
+            "endTime": "10:45"
+          },
+          {
+            "day": "Mon",
+            "startTime": "09:55",
+            "endTime": "10:45"
+          }
+        ]
+      },
+      {
+        "sectionId": "003",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "11:00",
+            "endTime": "11:50"
+          },
+          {
+            "day": "Fri",
+            "startTime": "11:00",
+            "endTime": "11:50"
+          },
+          {
+            "day": "Mon",
+            "startTime": "11:00",
+            "endTime": "11:50"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 3.53
+  },
+  {
+    "code": "ENGL178",
+    "name": "DIGITAL MEDIA, LITERATURE, AND CULTURE",
+    "credits": 3,
+    "difficulty": 1,
+    "tags": [
+      "digital",
+      "media structuring",
+      "literature examine",
+      "reception literature",
+      "experience literary"
+    ],
+    "breadth": "Humanities",
+    "creditType": "L&S",
+    "prerequisites": [],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "09:55",
+            "endTime": "10:45"
+          },
+          {
+            "day": "Mon",
+            "startTime": "09:55",
+            "endTime": "10:45"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 3.76
+  },
+  {
+    "code": "ENGL201",
+    "name": "INTERMEDIATE COMPOSITION",
+    "credits": 3,
+    "difficulty": 2,
+    "tags": [
+      "writing speaking",
+      "writing various",
+      "tools rhetorical",
+      "practice persuasive",
+      "persuasive"
+    ],
+    "breadth": "Humanities",
+    "genEd": [
+      "GenEd"
+    ],
+    "creditType": "L&S",
+    "prerequisites": [],
+    "sections": [
+      {
+        "sectionId": "006",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "09:30",
+            "endTime": "10:45"
+          },
+          {
+            "day": "Thu",
+            "startTime": "09:30",
+            "endTime": "10:45"
+          }
+        ]
+      },
+      {
+        "sectionId": "007",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          },
+          {
+            "day": "Thu",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          }
+        ]
+      },
+      {
+        "sectionId": "005",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "16:00",
+            "endTime": "17:15"
+          },
+          {
+            "day": "Thu",
+            "startTime": "16:00",
+            "endTime": "17:15"
+          }
+        ]
+      },
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "08:50",
+            "endTime": "09:40"
+          },
+          {
+            "day": "Fri",
+            "startTime": "08:50",
+            "endTime": "09:40"
+          },
+          {
+            "day": "Mon",
+            "startTime": "08:50",
+            "endTime": "09:40"
+          }
+        ]
+      },
+      {
+        "sectionId": "002",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "09:55",
+            "endTime": "10:45"
+          },
+          {
+            "day": "Fri",
+            "startTime": "09:55",
+            "endTime": "10:45"
+          },
+          {
+            "day": "Mon",
+            "startTime": "09:55",
+            "endTime": "10:45"
+          }
+        ]
+      },
+      {
+        "sectionId": "004",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "12:05",
+            "endTime": "12:55"
+          },
+          {
+            "day": "Fri",
+            "startTime": "12:05",
+            "endTime": "12:55"
+          },
+          {
+            "day": "Mon",
+            "startTime": "12:05",
+            "endTime": "12:55"
+          }
+        ]
+      },
+      {
+        "sectionId": "003",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "13:20",
+            "endTime": "14:10"
+          },
+          {
+            "day": "Fri",
+            "startTime": "13:20",
+            "endTime": "14:10"
+          },
+          {
+            "day": "Mon",
+            "startTime": "13:20",
+            "endTime": "14:10"
+          }
+        ]
+      },
+      {
+        "sectionId": "009",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "16:00",
+            "endTime": "17:15"
+          },
+          {
+            "day": "Mon",
+            "startTime": "16:00",
+            "endTime": "17:15"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 3.86
+  },
+  {
+    "code": "ENVIRST153",
+    "name": "LITERATURE AND THE ENVIRONMENT",
+    "credits": 3,
+    "difficulty": 1,
+    "tags": [
+      "specific topics",
+      "introduction",
+      "humankind relationship",
+      "natural world",
+      "literature english"
+    ],
+    "creditType": "L&S",
+    "prerequisites": [],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "13:20",
+            "endTime": "14:10"
+          },
+          {
+            "day": "Mon",
+            "startTime": "13:20",
+            "endTime": "14:10"
+          }
+        ]
+      },
+      {
+        "sectionId": "002",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "11:00",
+            "endTime": "12:15"
+          },
+          {
+            "day": "Thu",
+            "startTime": "11:00",
+            "endTime": "12:15"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 3.83
+  },
+  {
+    "code": "GEN&WS144",
+    "name": "WOMEN'S WRITING",
+    "credits": 3,
+    "difficulty": 1,
+    "tags": [
+      "periods places",
+      "topics vary",
+      "women various",
+      "english written",
+      "introduction literature"
+    ],
+    "creditType": "L&S",
+    "prerequisites": [],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "14:25",
+            "endTime": "15:15"
+          },
+          {
+            "day": "Mon",
+            "startTime": "14:25",
+            "endTime": "15:15"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 3.82
+  },
+  {
+    "code": "HISTORY101",
+    "name": "AMER HIST TO THE CIVIL WAR ERA, THE ORIGIN & GROWTH OF THE U S",
+    "credits": 4,
+    "difficulty": 1,
+    "tags": [
+      "development founding",
+      "economic social",
+      "american political",
+      "colonies",
+      "civil war"
+    ],
+    "breadth": "Humanities",
+    "creditType": "L&S",
+    "prerequisites": [],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          },
+          {
+            "day": "Mon",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 3.33
+  },
+  {
+    "code": "HISTORY102",
+    "name": "AMERICAN HISTORY, CIVIL WAR ERA TO THE PRESENT",
+    "credits": 4,
+    "difficulty": 1,
+    "tags": [
+      "economic",
+      "war present",
+      "civil",
+      "social development",
+      "american political"
+    ],
+    "breadth": "Humanities",
+    "creditType": "L&S",
+    "prerequisites": [],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "11:00",
+            "endTime": "12:15"
+          },
+          {
+            "day": "Thu",
+            "startTime": "11:00",
+            "endTime": "12:15"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 3.36
+  },
+  {
+    "code": "HISTORY109",
+    "name": "INTRODUCTION TO U.S. HISTORY",
+    "credits": 4,
+    "difficulty": 1,
+    "tags": [
+      "exploration thematic",
+      "chronological area",
+      "perspectives topics",
+      "critical historical",
+      "states history"
+    ],
+    "breadth": "Humanities",
+    "creditType": "L&S",
+    "prerequisites": [],
+    "sections": [
+      {
+        "sectionId": "048",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Mon",
+            "startTime": "13:30",
+            "endTime": "15:00"
+          },
+          {
+            "day": "Tue",
+            "startTime": "13:30",
+            "endTime": "15:00"
+          },
+          {
+            "day": "Wed",
+            "startTime": "13:30",
+            "endTime": "15:00"
+          },
+          {
+            "day": "Thu",
+            "startTime": "13:30",
+            "endTime": "15:00"
+          },
+          {
+            "day": "Fri",
+            "startTime": "13:30",
+            "endTime": "15:00"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 3.39
+  },
+  {
+    "code": "HISTORY120",
+    "name": "EUROPE AND THE MODERN WORLD 1815 TO THE PRESENT",
+    "credits": 4,
+    "difficulty": 1,
+    "tags": [
+      "modern",
+      "social cultural",
+      "history",
+      "western",
+      "civilization"
+    ],
+    "breadth": "Humanities",
+    "creditType": "L&S",
+    "prerequisites": [],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "09:55",
+            "endTime": "10:45"
+          },
+          {
+            "day": "Fri",
+            "startTime": "09:55",
+            "endTime": "10:45"
+          },
+          {
+            "day": "Mon",
+            "startTime": "09:55",
+            "endTime": "10:45"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 3.31
+  },
+  {
+    "code": "HISTORY130",
+    "name": "AN INTRODUCTION TO WORLD HISTORY",
+    "credits": 4,
+    "difficulty": 1,
+    "tags": [
+      "impacts global",
+      "themes world",
+      "empire imperialism",
+      "major themes",
+      "world history"
+    ],
+    "breadth": "Humanities",
+    "creditType": "L&S",
+    "prerequisites": [],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "13:00",
+            "endTime": "14:15"
+          },
+          {
+            "day": "Thu",
+            "startTime": "13:00",
+            "endTime": "14:15"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 3.58
+  },
+  {
+    "code": "HISTORY155",
+    "name": "THE LONG BLACK FREEDOM STRUGGLE FROM THE CIVIL WAR TO THE PRESENT",
+    "credits": 4,
+    "difficulty": 1,
+    "tags": [
+      "era slavery",
+      "history enslavement",
+      "african american",
+      "black lives",
+      "abolitionism struggle"
+    ],
+    "breadth": "Humanities",
+    "genEd": [
+      "Ethnic Studies"
+    ],
+    "creditType": "L&S",
+    "prerequisites": [],
+    "sections": [
+      {
+        "sectionId": "002",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "13:00",
+            "endTime": "14:15"
+          },
+          {
+            "day": "Thu",
+            "startTime": "13:00",
+            "endTime": "14:15"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 3.56
+  },
+  {
+    "code": "HISTORY200",
+    "name": "HISTORICAL STUDIES",
+    "credits": 4,
+    "difficulty": 2,
+    "tags": [
+      "thinking topics",
+      "interpretation critical",
+      "research university",
+      "studies research",
+      "introduction historical"
+    ],
+    "breadth": "Humanities",
+    "creditType": "L&S",
+    "prerequisites": [],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "13:00",
+            "endTime": "14:15"
+          },
+          {
+            "day": "Thu",
+            "startTime": "13:00",
+            "endTime": "14:15"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 3.5
+  },
+  {
+    "code": "HISTORY201",
+    "name": "THE HISTORIAN'S CRAFT",
+    "credits": 4,
+    "difficulty": 2,
+    "tags": [
+      "detectives practice",
+      "collecting analyzing",
+      "engagement archival",
+      "original historical",
+      "research convey"
+    ],
+    "breadth": "Humanities",
+    "genEd": [
+      "GenEd"
+    ],
+    "creditType": "L&S",
+    "prerequisites": [
+      "HISTSCI211"
+    ],
+    "sections": [
+      {
+        "sectionId": "018",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "11:00",
+            "endTime": "12:55"
+          }
+        ]
+      },
+      {
+        "sectionId": "012",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "09:30",
+            "endTime": "10:45"
+          },
+          {
+            "day": "Thu",
+            "startTime": "09:30",
+            "endTime": "10:45"
+          }
+        ]
+      },
+      {
+        "sectionId": "015",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "15:30",
+            "endTime": "17:25"
+          }
+        ]
+      },
+      {
+        "sectionId": "007",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "13:20",
+            "endTime": "15:15"
+          }
+        ]
+      },
+      {
+        "sectionId": "013",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "15:30",
+            "endTime": "17:25"
+          }
+        ]
+      },
+      {
+        "sectionId": "009",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "15:30",
+            "endTime": "17:25"
+          }
+        ]
+      },
+      {
+        "sectionId": "016",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Thu",
+            "startTime": "08:50",
+            "endTime": "10:45"
+          }
+        ]
+      },
+      {
+        "sectionId": "006",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Mon",
+            "startTime": "08:50",
+            "endTime": "10:45"
+          }
+        ]
+      },
+      {
+        "sectionId": "017",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Mon",
+            "startTime": "11:00",
+            "endTime": "12:55"
+          }
+        ]
+      },
+      {
+        "sectionId": "014",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Mon",
+            "startTime": "13:20",
+            "endTime": "15:15"
+          }
+        ]
+      },
+      {
+        "sectionId": "011",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Mon",
+            "startTime": "08:50",
+            "endTime": "10:45"
+          }
+        ]
+      },
+      {
+        "sectionId": "004",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "11:00",
+            "endTime": "12:15"
+          },
+          {
+            "day": "Thu",
+            "startTime": "11:00",
+            "endTime": "12:15"
+          }
+        ]
+      },
+      {
+        "sectionId": "005",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          },
+          {
+            "day": "Mon",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          }
+        ]
+      },
+      {
+        "sectionId": "003",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "11:00",
+            "endTime": "12:15"
+          },
+          {
+            "day": "Thu",
+            "startTime": "11:00",
+            "endTime": "12:15"
+          }
+        ]
+      },
+      {
+        "sectionId": "002",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "11:00",
+            "endTime": "12:15"
+          },
+          {
+            "day": "Thu",
+            "startTime": "11:00",
+            "endTime": "12:15"
+          }
+        ]
+      },
+      {
+        "sectionId": "010",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          },
+          {
+            "day": "Thu",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 3.51
+  },
+  {
+    "code": "KINES100",
+    "name": "EXERCISE, NUTRITION, AND HEALTH",
+    "credits": 2,
+    "difficulty": 1,
+    "tags": [
+      "nutrition",
+      "effects exercise",
+      "adherence stress",
+      "nutrition health",
+      "motivation adherence"
+    ],
+    "breadth": "Biological Science",
+    "creditType": "L&S",
+    "prerequisites": [],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Mon",
+            "startTime": "12:05",
+            "endTime": "12:55"
+          }
+        ]
+      },
+      {
+        "sectionId": "002",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Mon",
+            "startTime": "13:10",
+            "endTime": "14:00"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 2.89
+  },
+  {
+    "code": "KINES110",
+    "name": "EXPLORING CAREERS IN HEALTH AND WELLNESS",
+    "credits": 1,
+    "difficulty": 1,
+    "tags": [
+      "skills career",
+      "health wellness",
+      "understanding career",
+      "careers academically",
+      "career pathways"
+    ],
+    "breadth": "Biological Science",
+    "creditType": "L&S",
+    "prerequisites": [],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "11:00",
+            "endTime": "11:50"
+          }
+        ]
+      }
+    ],
+    "avgGpa": null
+  },
+  {
+    "code": "KINES116",
+    "name": "FIRST AID AND BASIC LIFE SUPPORT",
+    "credits": 2,
+    "difficulty": 1,
+    "tags": [
+      "cardiopulmonary resuscitation",
+      "external defibrillation",
+      "training airway",
+      "emergencies includes",
+      "common emergencies"
+    ],
+    "breadth": "Biological Science",
+    "creditType": "L&S",
+    "prerequisites": [],
+    "sections": [
+      {
+        "sectionId": "002",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "16:00",
+            "endTime": "17:15"
+          },
+          {
+            "day": "Mon",
+            "startTime": "16:00",
+            "endTime": "17:15"
+          }
+        ]
+      },
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          },
+          {
+            "day": "Mon",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 3.78
+  },
+  {
+    "code": "KINES119",
+    "name": "INTRODUCTION TO KINESIOLOGY",
+    "credits": 2,
+    "difficulty": 1,
+    "tags": [
+      "students field",
+      "university wisconsin",
+      "physical activity",
+      "kinesiology discussed",
+      "opportunities kinesiology"
+    ],
+    "breadth": "Biological Science",
+    "creditType": "L&S",
+    "prerequisites": [],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "12:00",
+            "endTime": "12:50"
+          },
+          {
+            "day": "Thu",
+            "startTime": "12:00",
+            "endTime": "12:50"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 3.71
+  },
+  {
+    "code": "KINES123",
+    "name": "LIVING WELL: LIFESTYLE REDESIGN AND HEALTH PROMOTION FOR COLLEGE STUDENTS",
+    "credits": 2,
+    "difficulty": 1,
+    "tags": [
+      "lifestyle new",
+      "choices lifestyle",
+      "adjusting college",
+      "life transition",
+      "student lives"
+    ],
+    "breadth": "Biological Science",
+    "creditType": "L&S",
+    "prerequisites": [],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "13:20",
+            "endTime": "15:00"
+          }
+        ]
+      }
+    ],
+    "avgGpa": null
+  },
+  {
+    "code": "KINES127",
+    "name": "INTRODUCTION TO ATHLETIC HEALTHCARE",
+    "credits": 2,
+    "difficulty": 1,
+    "tags": [
+      "patient care",
+      "team approach",
+      "health science",
+      "injuries conditions",
+      "concepts athletic"
+    ],
+    "breadth": "Biological Science",
+    "creditType": "L&S",
+    "prerequisites": [],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "08:50",
+            "endTime": "09:40"
+          },
+          {
+            "day": "Thu",
+            "startTime": "08:50",
+            "endTime": "09:40"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 3.42
+  },
+  {
+    "code": "KINES140",
+    "name": "SCIENCE AND PRACTICE OF RESISTANCE TRAINING",
+    "credits": 2,
+    "difficulty": 1,
+    "tags": [
+      "physiological effects",
+      "lectures demonstrations",
+      "training associated",
+      "science resistance",
+      "principles resistance"
+    ],
+    "breadth": "Biological Science",
+    "creditType": "L&S",
+    "prerequisites": [],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "09:55",
+            "endTime": "10:45"
+          },
+          {
+            "day": "Thu",
+            "startTime": "09:55",
+            "endTime": "10:45"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 3.62
+  },
+  {
+    "code": "KINES150",
+    "name": "FOUNDATIONS OF HEALTH BEHAVIOR AND HEALTH EQUITY",
+    "credits": 3,
+    "difficulty": 1,
+    "tags": [
+      "contribute health",
+      "behavior interventions",
+      "approaches health",
+      "health individuals",
+      "education health"
+    ],
+    "breadth": "Biological Science",
+    "creditType": "L&S",
+    "prerequisites": [],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "16:00",
+            "endTime": "17:15"
+          },
+          {
+            "day": "Mon",
+            "startTime": "16:00",
+            "endTime": "17:15"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 3.83
+  },
+  {
+    "code": "LIS102",
+    "name": "INTRODUCTION TO COMPUTING",
+    "credits": 3,
+    "difficulty": 1,
+    "tags": [
+      "coding environment",
+      "overview computing",
+      "computing algorithms",
+      "applications introductory",
+      "understanding computers"
+    ],
+    "genEd": [
+      "GenEd"
+    ],
+    "creditType": "L&S",
+    "prerequisites": [
+      "MATH96"
+    ],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "16:00",
+            "endTime": "17:15"
+          },
+          {
+            "day": "Mon",
+            "startTime": "16:00",
+            "endTime": "17:15"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 3.76
+  },
+  {
+    "code": "MATH112",
+    "name": "COLLEGE ALGEBRA",
+    "credits": 3,
+    "difficulty": 1,
+    "tags": [
+      "provides algebra",
+      "inequalities functions",
+      "required calculus",
+      "mathematical",
+      "functions topics"
+    ],
+    "breadth": "Natural Science",
+    "genEd": [
+      "GenEd"
+    ],
+    "creditType": "L&S",
+    "prerequisites": [
+      "MATH96"
+    ],
+    "sections": [
+      {
+        "sectionId": "006",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "13:00",
+            "endTime": "14:15"
+          },
+          {
+            "day": "Thu",
+            "startTime": "13:00",
+            "endTime": "14:15"
+          }
+        ]
+      },
+      {
+        "sectionId": "008",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          },
+          {
+            "day": "Thu",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          }
+        ]
+      },
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "08:00",
+            "endTime": "09:15"
+          },
+          {
+            "day": "Thu",
+            "startTime": "08:00",
+            "endTime": "09:15"
+          }
+        ]
+      },
+      {
+        "sectionId": "003",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "09:30",
+            "endTime": "10:45"
+          },
+          {
+            "day": "Thu",
+            "startTime": "09:30",
+            "endTime": "10:45"
+          }
+        ]
+      },
+      {
+        "sectionId": "005",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "13:00",
+            "endTime": "14:15"
+          },
+          {
+            "day": "Thu",
+            "startTime": "13:00",
+            "endTime": "14:15"
+          }
+        ]
+      },
+      {
+        "sectionId": "002",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "08:00",
+            "endTime": "09:15"
+          },
+          {
+            "day": "Thu",
+            "startTime": "08:00",
+            "endTime": "09:15"
+          }
+        ]
+      },
+      {
+        "sectionId": "004",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "09:30",
+            "endTime": "10:45"
+          },
+          {
+            "day": "Thu",
+            "startTime": "09:30",
+            "endTime": "10:45"
+          }
+        ]
+      },
+      {
+        "sectionId": "007",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          },
+          {
+            "day": "Thu",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          }
+        ]
+      },
+      {
+        "sectionId": "009",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "16:00",
+            "endTime": "17:15"
+          },
+          {
+            "day": "Thu",
+            "startTime": "16:00",
+            "endTime": "17:15"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 2.61
+  },
+  {
+    "code": "MATH113",
+    "name": "TRIGONOMETRY",
+    "credits": 3,
+    "difficulty": 1,
+    "tags": [
+      "applications especially",
+      "number applications",
+      "include trigonometric",
+      "trigonometric equations",
+      "significance trigonometric"
+    ],
+    "breadth": "Natural Science",
+    "creditType": "L&S",
+    "prerequisites": [
+      "MATH112"
+    ],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "08:00",
+            "endTime": "09:15"
+          },
+          {
+            "day": "Thu",
+            "startTime": "08:00",
+            "endTime": "09:15"
+          }
+        ]
+      },
+      {
+        "sectionId": "002",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "09:30",
+            "endTime": "10:45"
+          },
+          {
+            "day": "Thu",
+            "startTime": "09:30",
+            "endTime": "10:45"
+          }
+        ]
+      },
+      {
+        "sectionId": "003",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "13:00",
+            "endTime": "14:15"
+          },
+          {
+            "day": "Thu",
+            "startTime": "13:00",
+            "endTime": "14:15"
+          }
+        ]
+      },
+      {
+        "sectionId": "004",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          },
+          {
+            "day": "Thu",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          }
+        ]
+      },
+      {
+        "sectionId": "005",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "16:00",
+            "endTime": "17:15"
+          },
+          {
+            "day": "Thu",
+            "startTime": "16:00",
+            "endTime": "17:15"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 2.88
+  },
+  {
+    "code": "MATH114",
+    "name": "PRECALCULUS",
+    "credits": 5,
+    "difficulty": 1,
+    "tags": [
+      "significance trigonometry",
+      "trigonometric equations",
+      "functions graphs",
+      "required calculus",
+      "functions topics"
+    ],
+    "breadth": "Natural Science",
+    "genEd": [
+      "GenEd"
+    ],
+    "creditType": "L&S",
+    "prerequisites": [
+      "MATH96"
+    ],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          },
+          {
+            "day": "Thu",
+            "startTime": "14:30",
+            "endTime": "15:45"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 2.81
+  },
+  {
+    "code": "MATH141",
+    "name": "QUANTITATIVE REASONING AND PROBLEM SOLVING",
+    "credits": 3,
+    "difficulty": 1,
+    "tags": [
+      "students need",
+      "qr",
+      "reason mathematically",
+      "solve quantitative",
+      "qr courses"
+    ],
+    "breadth": "Natural Science",
+    "genEd": [
+      "GenEd"
+    ],
+    "creditType": "L&S",
+    "prerequisites": [
+      "MATH96"
+    ],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "08:50",
+            "endTime": "09:40"
+          },
+          {
+            "day": "Fri",
+            "startTime": "08:50",
+            "endTime": "09:40"
+          },
+          {
+            "day": "Mon",
+            "startTime": "08:50",
+            "endTime": "09:40"
+          }
+        ]
+      },
+      {
+        "sectionId": "002",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "09:55",
+            "endTime": "10:45"
+          },
+          {
+            "day": "Fri",
+            "startTime": "09:55",
+            "endTime": "10:45"
+          },
+          {
+            "day": "Mon",
+            "startTime": "09:55",
+            "endTime": "10:45"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 3.08
+  },
+  {
+    "code": "MATH211",
+    "name": "SURVEY OF CALCULUS 1",
+    "credits": 4,
+    "difficulty": 2,
+    "tags": [
+      "logarithmic functions",
+      "physics engineering",
+      "sciences including",
+      "calculus exponential",
+      "study mathematics"
+    ],
+    "breadth": "Natural Science",
+    "genEd": [
+      "GenEd"
+    ],
+    "creditType": "L&S",
+    "prerequisites": [
+      "MATH221"
+    ],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Mon",
+            "startTime": "10:20",
+            "endTime": "11:35"
+          },
+          {
+            "day": "Tue",
+            "startTime": "10:20",
+            "endTime": "11:35"
+          },
+          {
+            "day": "Wed",
+            "startTime": "10:20",
+            "endTime": "11:35"
+          },
+          {
+            "day": "Thu",
+            "startTime": "10:20",
+            "endTime": "11:35"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 2.87
+  },
+  {
+    "code": "MATH221",
+    "name": "CALCULUS AND ANALYTIC GEOMETRY 1",
+    "credits": 5,
+    "difficulty": 2,
+    "tags": [
+      "integral calculus",
+      "transcendental",
+      "introduction differential",
+      "analytic geometry",
+      "plane analytic"
+    ],
+    "breadth": "Natural Science",
+    "genEd": [
+      "GenEd"
+    ],
+    "creditType": "L&S",
+    "prerequisites": [
+      "MATH112",
+      "MATH113"
+    ],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Mon",
+            "startTime": "08:55",
+            "endTime": "10:10"
+          },
+          {
+            "day": "Tue",
+            "startTime": "08:55",
+            "endTime": "10:10"
+          },
+          {
+            "day": "Wed",
+            "startTime": "08:55",
+            "endTime": "10:10"
+          },
+          {
+            "day": "Thu",
+            "startTime": "08:55",
+            "endTime": "10:10"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 2.87
+  },
+  {
+    "code": "MATH222",
+    "name": "CALCULUS AND ANALYTIC GEOMETRY 2",
+    "credits": 4,
+    "difficulty": 2,
+    "tags": [
+      "geometry",
+      "differential equations",
+      "improper integrals",
+      "series vector",
+      "techniques integration"
+    ],
+    "breadth": "Natural Science",
+    "genEd": [
+      "GenEd"
+    ],
+    "creditType": "L&S",
+    "prerequisites": [
+      "MATH221"
+    ],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Mon",
+            "startTime": "11:45",
+            "endTime": "13:00"
+          },
+          {
+            "day": "Tue",
+            "startTime": "11:45",
+            "endTime": "13:00"
+          },
+          {
+            "day": "Wed",
+            "startTime": "11:45",
+            "endTime": "13:00"
+          },
+          {
+            "day": "Thu",
+            "startTime": "11:45",
+            "endTime": "13:00"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 2.8
+  },
+  {
+    "code": "MATH234",
+    "name": "CALCULUS--FUNCTIONS OF SEVERAL VARIABLES",
+    "credits": 4,
+    "difficulty": 2,
+    "tags": [
+      "parameterized curves",
+      "multiple integrals",
+      "curves derivatives",
+      "vector calculus",
+      "introduction calculus"
+    ],
+    "breadth": "Natural Science",
+    "creditType": "L&S",
+    "prerequisites": [
+      "MATH222"
+    ],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Mon",
+            "startTime": "11:45",
+            "endTime": "13:00"
+          },
+          {
+            "day": "Tue",
+            "startTime": "11:45",
+            "endTime": "13:00"
+          },
+          {
+            "day": "Wed",
+            "startTime": "11:45",
+            "endTime": "13:00"
+          },
+          {
+            "day": "Thu",
+            "startTime": "11:45",
+            "endTime": "13:00"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 2.96
+  },
+  {
+    "code": "MATH96",
+    "name": "PREPARATORY ALGEBRA",
+    "credits": 3,
+    "difficulty": 1,
+    "tags": [
+      "fundamental mathematical",
+      "using algebra",
+      "necessary mathematical",
+      "succeed algebra",
+      "mathematical tools"
+    ],
+    "breadth": "Natural Science",
+    "creditType": "L&S",
+    "prerequisites": [],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "08:50",
+            "endTime": "09:40"
+          },
+          {
+            "day": "Fri",
+            "startTime": "08:50",
+            "endTime": "09:40"
+          },
+          {
+            "day": "Mon",
+            "startTime": "08:50",
+            "endTime": "09:40"
+          }
+        ]
+      },
+      {
+        "sectionId": "002",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "11:00",
+            "endTime": "11:50"
+          },
+          {
+            "day": "Fri",
+            "startTime": "11:00",
+            "endTime": "11:50"
+          },
+          {
+            "day": "Mon",
+            "startTime": "11:00",
+            "endTime": "11:50"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 2.73
+  },
+  {
+    "code": "PHYSICS103",
+    "name": "GENERAL PHYSICS",
+    "credits": 4,
+    "difficulty": 1,
+    "tags": [
+      "non calculus",
+      "principles mechanics",
+      "waves applications",
+      "physical sciences",
+      "heat waves"
+    ],
+    "breadth": "Natural Science",
+    "genEd": [
+      "GenEd"
+    ],
+    "creditType": "L&S",
+    "prerequisites": [
+      "MATH211"
+    ],
+    "sections": [
+      {
+        "sectionId": "002",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "15:30",
+            "endTime": "16:20"
+          },
+          {
+            "day": "Mon",
+            "startTime": "15:30",
+            "endTime": "16:20"
+          }
+        ]
+      },
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "14:25",
+            "endTime": "15:15"
+          },
+          {
+            "day": "Mon",
+            "startTime": "14:25",
+            "endTime": "15:15"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 3.05
+  },
+  {
+    "code": "PHYSICS104",
+    "name": "GENERAL PHYSICS",
+    "credits": 4,
+    "difficulty": 1,
+    "tags": [
+      "physics applications",
+      "magnetism light",
+      "continuation ofphysics",
+      "principles electricity",
+      "ofphysics 103"
+    ],
+    "breadth": "Natural Science",
+    "creditType": "L&S",
+    "prerequisites": [
+      "PHYSICS103"
+    ],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Mon",
+            "startTime": "08:55",
+            "endTime": "09:45"
+          },
+          {
+            "day": "Tue",
+            "startTime": "08:55",
+            "endTime": "09:45"
+          },
+          {
+            "day": "Wed",
+            "startTime": "08:55",
+            "endTime": "09:45"
+          },
+          {
+            "day": "Thu",
+            "startTime": "08:55",
+            "endTime": "09:45"
+          },
+          {
+            "day": "Wed",
+            "startTime": "11:00",
+            "endTime": "11:50"
+          },
+          {
+            "day": "Mon",
+            "startTime": "11:00",
+            "endTime": "11:50"
+          }
+        ]
+      },
+      {
+        "sectionId": "003",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "13:20",
+            "endTime": "14:10"
+          },
+          {
+            "day": "Mon",
+            "startTime": "13:20",
+            "endTime": "14:10"
+          }
+        ]
+      },
+      {
+        "sectionId": "002",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "12:05",
+            "endTime": "12:55"
+          },
+          {
+            "day": "Mon",
+            "startTime": "12:05",
+            "endTime": "12:55"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 3.08
+  },
+  {
+    "code": "PHYSICS106",
+    "name": "PHYSICS OF SPORTS",
+    "credits": 3,
+    "difficulty": 1,
+    "tags": [
+      "archery golf",
+      "physical principles",
+      "sporting event",
+      "different angle",
+      "tenth second"
+    ],
+    "breadth": "Natural Science",
+    "genEd": [
+      "GenEd"
+    ],
+    "creditType": "L&S",
+    "prerequisites": [
+      "PHYSICS103"
+    ],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "15:30",
+            "endTime": "16:45"
+          },
+          {
+            "day": "Thu",
+            "startTime": "15:30",
+            "endTime": "16:45"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 3.54
+  },
+  {
+    "code": "PHYSICS109",
+    "name": "PHYSICS IN THE ARTS",
+    "credits": 3,
+    "difficulty": 1,
+    "tags": [
+      "instruments studies",
+      "musical scales",
+      "color perception",
+      "nature sound",
+      "perception fundamentals"
+    ],
+    "breadth": "Natural Science",
+    "genEd": [
+      "GenEd"
+    ],
+    "creditType": "L&S",
+    "prerequisites": [
+      "PHYSICS371"
+    ],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "14:25",
+            "endTime": "15:15"
+          },
+          {
+            "day": "Mon",
+            "startTime": "14:25",
+            "endTime": "15:15"
+          }
+        ]
+      },
+      {
+        "sectionId": "002",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Wed",
+            "startTime": "15:30",
+            "endTime": "16:20"
+          },
+          {
+            "day": "Mon",
+            "startTime": "15:30",
+            "endTime": "16:20"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 3.37
+  },
+  {
+    "code": "PHYSICS115",
+    "name": "ENERGY AND CLIMATE",
+    "credits": 3,
+    "difficulty": 1,
+    "tags": [
+      "nuclear impacts",
+      "fuels",
+      "opinions energy",
+      "energy apply",
+      "energy sources"
+    ],
+    "breadth": "Natural Science",
+    "genEd": [
+      "GenEd"
+    ],
+    "creditType": "L&S",
+    "prerequisites": [
+      "PHYSICS103"
+    ],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "14:25",
+            "endTime": "15:15"
+          },
+          {
+            "day": "Thu",
+            "startTime": "14:25",
+            "endTime": "15:15"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 3.36
+  },
+  {
+    "code": "PHYSICS201",
+    "name": "GENERAL PHYSICS",
+    "credits": 5,
+    "difficulty": 2,
+    "tags": [
+      "dynamics energy",
+      "engineering students",
+      "mechanics kinematics",
+      "introduction physics",
+      "calculus based"
+    ],
+    "breadth": "Natural Science",
+    "genEd": [
+      "GenEd"
+    ],
+    "creditType": "L&S",
+    "prerequisites": [
+      "MATH221"
+    ],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "13:20",
+            "endTime": "14:10"
+          },
+          {
+            "day": "Thu",
+            "startTime": "13:20",
+            "endTime": "14:10"
+          }
+        ]
+      },
+      {
+        "sectionId": "002",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Tue",
+            "startTime": "14:25",
+            "endTime": "15:15"
+          },
+          {
+            "day": "Thu",
+            "startTime": "14:25",
+            "endTime": "15:15"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 2.92
+  },
+  {
+    "code": "PHYSICS202",
+    "name": "GENERAL PHYSICS",
+    "credits": 5,
+    "difficulty": 2,
+    "tags": [
+      "engineering",
+      "electricity magnetism",
+      "students electricity",
+      "calculus",
+      "introduction physics"
+    ],
+    "breadth": "Natural Science",
+    "creditType": "L&S",
+    "prerequisites": [
+      "PHYSICS201"
+    ],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Mon",
+            "startTime": "10:20",
+            "endTime": "11:10"
+          },
+          {
+            "day": "Tue",
+            "startTime": "10:20",
+            "endTime": "11:10"
+          },
+          {
+            "day": "Wed",
+            "startTime": "10:20",
+            "endTime": "11:10"
+          },
+          {
+            "day": "Thu",
+            "startTime": "10:20",
+            "endTime": "11:10"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 2.95
+  },
+  {
+    "code": "PHYSICS241",
+    "name": "INTRODUCTION TO MODERN PHYSICS",
+    "credits": 3,
+    "difficulty": 2,
+    "tags": [
+      "topics solid",
+      "nuclear particle",
+      "origin quantum",
+      "atomic structure",
+      "kinetic theory"
+    ],
+    "breadth": "Natural Science",
+    "creditType": "L&S",
+    "prerequisites": [
+      "PHYSICS248",
+      "MATH222"
+    ],
+    "sections": [
+      {
+        "sectionId": "001",
+        "type": "Lecture",
+        "meetings": [
+          {
+            "day": "Mon",
+            "startTime": "09:55",
+            "endTime": "10:45"
+          },
+          {
+            "day": "Tue",
+            "startTime": "09:55",
+            "endTime": "10:45"
+          },
+          {
+            "day": "Wed",
+            "startTime": "09:55",
+            "endTime": "10:45"
+          },
+          {
+            "day": "Thu",
+            "startTime": "09:55",
+            "endTime": "10:45"
+          }
+        ]
+      }
+    ],
+    "avgGpa": 3.1
+  }
+]
