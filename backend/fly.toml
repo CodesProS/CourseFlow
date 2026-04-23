@@ -1,0 +1,25 @@
+# fly.toml — Fly.io deployment config for the CourseFlow backend.
+# Generated-style but hand-tuned. Regenerate with `fly launch` if you want.
+
+app = "courseflow-api"
+primary_region = "ord" # Chicago — closest to most US users for a low-latency demo
+
+[build]
+
+[http_service]
+  internal_port = 3001
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [http_service.concurrency]
+    type = "connections"
+    hard_limit = 50
+    soft_limit = 25
+
+# Tiny machine — this app fits comfortably in 256MB.
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 256

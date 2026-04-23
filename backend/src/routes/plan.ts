@@ -1,11 +1,3 @@
-/**
- * /plan route.
- *
- * Wraps the planning pipeline (filter -> rank -> backtrack) behind a
- * single HTTP endpoint. The frontend POSTs a small payload and gets
- * back a ranked list of conflict-free schedules.
- */
-
 import { Router } from "express";
 import type { SearchCriteria } from "../models/SearchCriteria";
 import { courseRepository } from "../repositories/courseRepository";
@@ -15,32 +7,18 @@ import { generateSchedules } from "../services/scheduleService";
 
 const router = Router();
 
-/**
- * Expected request shape. Defensive: every field is optional because
- * we'll fill in sensible defaults.
- */
 interface PlanRequestBody {
     completedCourses?: string[];
     criteria?: SearchCriteria;
 }
 
-/** Maximum schedules returned per request. Protects against combinatorial
- * blowup on large catalogs — generateSchedules() is O(2^n) worst case.
- * We could alternatively time-budget the backtracker, but a hard cap is
- * simpler and still gives the UI plenty to show. */
+// Cap on returned schedules. generateSchedules is O(2^n) worst case so
+// the backtracker can still blow up internally — this just keeps the
+// response small. TODO: push the cap into the backtracker itself.
 const MAX_SCHEDULES = 50;
 
-/**
- * POST /plan
- *
- * Body:  { completedCourses?: string[], criteria?: SearchCriteria }
- * Reply: { totalFound: number, schedules: Schedule[] }
- */
+// POST /plan — body: { completedCourses?, criteria? }
 router.post("/", (req, res) => {
-    // Defensive parsing — trust nothing from the wire. If the frontend
-    // sends malformed JSON, Express's express.json() middleware will
-    // have already 400'd before we reach here; we only need to handle
-    // well-formed-JSON-but-wrong-shape cases.
     const body: PlanRequestBody =
         typeof req.body === "object" && req.body !== null ? req.body : {};
 
@@ -54,8 +32,7 @@ router.post("/", (req, res) => {
             ? body.criteria
             : {};
 
-    const allCourses = courseRepository.listAll();
-    const available = getAvailableCourses(allCourses, completed);
+    const available = getAvailableCourses(courseRepository.listAll(), completed);
     const ranked = rankCourses(available, criteria);
     const schedules = generateSchedules(
         ranked,

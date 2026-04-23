@@ -1,9 +1,15 @@
-import { useState } from "react";
-import type { SearchCriteria } from "@backend/models/SearchCriteria";
+import { useMemo, useState } from "react";
+import Select from "react-select";
+import type { MultiValue } from "react-select";
+import type { SearchCriteria } from "../types";
+import { useCourses, useCoursesMeta } from "../api/hooks";
 
 type SearchFormProps = {
     onGenerate: (payload: { completedCourses: string[]; criteria: SearchCriteria }) => void;
+    isSubmitting?: boolean;
 };
+
+type Option = { value: string; label: string };
 
 function splitCommaSeparated(value: string): string[] {
     return value
@@ -12,50 +18,116 @@ function splitCommaSeparated(value: string): string[] {
         .filter(Boolean);
 }
 
-export default function SearchForm({ onGenerate }: SearchFormProps) {
-    const [completedCoursesInput, setCompletedCoursesInput] = useState("");
+// react-select works in { value, label } pairs. These helpers convert to/from
+// the string[] shape the API expects.
+const toOptions = (values: string[]): Option[] =>
+    values.map((v) => ({ value: v, label: v }));
+
+const fromOptions = (opts: MultiValue<Option>): string[] =>
+    opts.map((o) => o.value);
+
+// react-select styling — dark theme to match the app shell.
+const selectStyles = {
+    control: (base: Record<string, unknown>) => ({
+        ...base,
+        background: "var(--surface-2, #1a1d24)",
+        borderColor: "var(--border, #2a2f3a)",
+        minHeight: 38,
+    }),
+    menu: (base: Record<string, unknown>) => ({
+        ...base,
+        background: "var(--surface-2, #1a1d24)",
+        zIndex: 20,
+    }),
+    option: (base: Record<string, unknown>, state: { isFocused: boolean }) => ({
+        ...base,
+        background: state.isFocused ? "var(--surface-3, #242933)" : "transparent",
+        color: "var(--text, #e6e6e6)",
+    }),
+    multiValue: (base: Record<string, unknown>) => ({
+        ...base,
+        background: "var(--accent-muted, #2d3748)",
+    }),
+    multiValueLabel: (base: Record<string, unknown>) => ({
+        ...base,
+        color: "var(--text, #e6e6e6)",
+    }),
+    input: (base: Record<string, unknown>) => ({ ...base, color: "var(--text, #e6e6e6)" }),
+    singleValue: (base: Record<string, unknown>) => ({ ...base, color: "var(--text, #e6e6e6)" }),
+    placeholder: (base: Record<string, unknown>) => ({ ...base, color: "var(--text-muted, #7a8290)" }),
+};
+
+export default function SearchForm({ onGenerate, isSubmitting = false }: SearchFormProps) {
+    const metaQuery = useCoursesMeta();
+    const coursesQuery = useCourses();
+
+    const [completedCourses, setCompletedCourses] = useState<Option[]>([]);
     const [interestsInput, setInterestsInput] = useState("");
-    const [preferredTagsInput, setPreferredTagsInput] = useState("");
-    const [neededBreadthInput, setNeededBreadthInput] = useState("");
-    const [neededGenEdInput, setNeededGenEdInput] = useState("");
+    const [preferredTags, setPreferredTags] = useState<Option[]>([]);
+    const [neededBreadth, setNeededBreadth] = useState<Option[]>([]);
+    const [neededGenEd, setNeededGenEd] = useState<Option[]>([]);
     const [maxDifficulty, setMaxDifficulty] = useState<number | "">(3);
     const [targetMinCredits, setTargetMinCredits] = useState<number | "">(12);
     const [targetMaxCredits, setTargetMaxCredits] = useState<number | "">(18);
 
+    const courseOptions: Option[] = useMemo(
+        () =>
+            (coursesQuery.data ?? []).map((c) => ({
+                value: c.code,
+                label: `${c.code} — ${c.name}`,
+            })),
+        [coursesQuery.data],
+    );
+
+    const tagOptions = useMemo(() => toOptions(metaQuery.data?.tags ?? []), [metaQuery.data]);
+    const breadthOptions = useMemo(() => toOptions(metaQuery.data?.breadths ?? []), [metaQuery.data]);
+    const genEdOptions = useMemo(() => toOptions(metaQuery.data?.genEds ?? []), [metaQuery.data]);
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        const completedCourses = splitCommaSeparated(completedCoursesInput);
-
         const criteria: SearchCriteria = {
             interests: splitCommaSeparated(interestsInput),
-            preferredTags: splitCommaSeparated(preferredTagsInput),
-            neededBreadth: splitCommaSeparated(neededBreadthInput),
-            neededGenEd: splitCommaSeparated(neededGenEdInput),
+            preferredTags: fromOptions(preferredTags),
+            neededBreadth: fromOptions(neededBreadth),
+            neededGenEd: fromOptions(neededGenEd),
             maxDifficulty: maxDifficulty === "" ? undefined : Number(maxDifficulty),
             targetCreditsMin: targetMinCredits === "" ? undefined : Number(targetMinCredits),
             targetCreditsMax: targetMaxCredits === "" ? undefined : Number(targetMaxCredits),
         };
 
-        onGenerate({ completedCourses, criteria });
+        onGenerate({ completedCourses: fromOptions(completedCourses), criteria });
     };
+
+    const metaLoading = metaQuery.isLoading || coursesQuery.isLoading;
+    const metaError = metaQuery.error ?? coursesQuery.error;
 
     return (
         <form className="search-form panel" onSubmit={handleSubmit}>
             <h2>Planner Preferences</h2>
 
+            {metaError && (
+                <p className="error-text">
+                    Couldn&apos;t reach the API: {metaError.message}. Is the backend running on :3001?
+                </p>
+            )}
+
             <label className="field">
                 <span>Completed Courses</span>
-                <textarea
-                    placeholder="CS200, MATH221"
-                    value={completedCoursesInput}
-                    onChange={(e) => setCompletedCoursesInput(e.target.value)}
-                    rows={3}
+                <Select
+                    isMulti
+                    options={courseOptions}
+                    value={completedCourses}
+                    onChange={(v) => setCompletedCourses([...v])}
+                    placeholder={metaLoading ? "Loading courses…" : "Search e.g. MATH221"}
+                    isLoading={coursesQuery.isLoading}
+                    styles={selectStyles}
+                    classNamePrefix="rs"
                 />
             </label>
 
             <label className="field">
-                <span>Interests</span>
+                <span>Interests (free text)</span>
                 <input
                     type="text"
                     placeholder="AI, systems, databases"
@@ -66,31 +138,43 @@ export default function SearchForm({ onGenerate }: SearchFormProps) {
 
             <label className="field">
                 <span>Preferred Tags</span>
-                <input
-                    type="text"
-                    placeholder="project, programming, theory"
-                    value={preferredTagsInput}
-                    onChange={(e) => setPreferredTagsInput(e.target.value)}
+                <Select
+                    isMulti
+                    options={tagOptions}
+                    value={preferredTags}
+                    onChange={(v) => setPreferredTags([...v])}
+                    placeholder={metaLoading ? "Loading…" : "e.g. project, programming"}
+                    isLoading={metaQuery.isLoading}
+                    styles={selectStyles}
+                    classNamePrefix="rs"
                 />
             </label>
 
             <label className="field">
                 <span>Needed Breadth</span>
-                <input
-                    type="text"
-                    placeholder="Biological Science, Humanities"
-                    value={neededBreadthInput}
-                    onChange={(e) => setNeededBreadthInput(e.target.value)}
+                <Select
+                    isMulti
+                    options={breadthOptions}
+                    value={neededBreadth}
+                    onChange={(v) => setNeededBreadth([...v])}
+                    placeholder={metaLoading ? "Loading…" : "e.g. Humanities"}
+                    isLoading={metaQuery.isLoading}
+                    styles={selectStyles}
+                    classNamePrefix="rs"
                 />
             </label>
 
             <label className="field">
                 <span>Needed GenEd</span>
-                <input
-                    type="text"
-                    placeholder="Ethnic Studies, Quantitative Reasoning A"
-                    value={neededGenEdInput}
-                    onChange={(e) => setNeededGenEdInput(e.target.value)}
+                <Select
+                    isMulti
+                    options={genEdOptions}
+                    value={neededGenEd}
+                    onChange={(v) => setNeededGenEd([...v])}
+                    placeholder={metaLoading ? "Loading…" : "e.g. Ethnic Studies"}
+                    isLoading={metaQuery.isLoading}
+                    styles={selectStyles}
+                    classNamePrefix="rs"
                 />
             </label>
 
@@ -133,8 +217,8 @@ export default function SearchForm({ onGenerate }: SearchFormProps) {
                 </label>
             </div>
 
-            <button type="submit" className="primary-btn">
-                Generate Schedules
+            <button type="submit" className="primary-btn" disabled={isSubmitting}>
+                {isSubmitting ? "Generating…" : "Generate Schedules"}
             </button>
         </form>
     );

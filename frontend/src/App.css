@@ -20,14 +20,14 @@ body {
 }
 
 .app-shell {
-  max-width: 1280px;
+  width: 100%;
   margin: 0 auto;
   padding: 24px 20px 40px;
 }
 
 .app-layout {
   display: grid;
-  grid-template-columns: 320px minmax(0, 1fr);
+  grid-template-columns: 300px minmax(0, 1fr);
   gap: 24px;
   align-items: start;
 }
@@ -38,19 +38,22 @@ body {
 }
 
 .app-header h1 {
-  margin: 0;
-  font-size: 4rem;
-  font-weight: 700;
-  letter-spacing: -0.03em;
+  font-size: 3.2rem;
+  margin-bottom: 8px;
 }
 
 .app-header p {
-  margin-top: 12px;
-  color: #aab3c5;
-  font-size: 1.2rem;
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 1.1rem;
 }
 
-.sidebar,
+.sidebar {
+  position: sticky;
+  top: 24px;
+  align-self: start;
+}
+
 .content {
   min-width: 0;
   display: flex;
@@ -58,9 +61,21 @@ body {
   gap: 18px;
 }
 
+.content>* {
+  min-width: 0;
+}
+
 .panel {
   min-width: 0;
-  overflow: hidden;
+  background: rgba(12, 18, 36, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.22);
+}
+
+.sidebar .panel {
+  background: rgba(5, 12, 28, 0.98);
 }
 
 .panel h2,
@@ -143,6 +158,44 @@ textarea {
   gap: 12px;
 }
 
+.view-toggle {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.view-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  width: fit-content;
+}
+
+.toggle-btn {
+  border: none;
+  background: transparent;
+  color: #aeb8cc;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.toggle-btn:hover {
+  color: #f3f4f6;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.toggle-btn.active {
+  background: rgba(59, 130, 246, 0.18);
+  color: #ffffff;
+}
+
 .primary-btn {
   width: 100%;
   border: none;
@@ -160,11 +213,33 @@ textarea {
   opacity: 0.95;
 }
 
+.primary-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.error-text {
+  background: rgba(220, 38, 38, 0.12);
+  border: 1px solid rgba(220, 38, 38, 0.4);
+  color: #fecaca;
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 14px;
+  font-size: 0.9rem;
+}
+
 .schedule-nav {
   display: grid;
-  grid-template-columns: 120px 1fr 120px;
+  grid-template-columns: 140px 1fr 140px;
   align-items: center;
   gap: 16px;
+}
+
+.schedule-nav-label {
+  text-align: center;
+  font-weight: 600;
+  color: #cbd5e1;
 }
 
 .schedule-nav button {
@@ -177,15 +252,13 @@ textarea {
   cursor: pointer;
 }
 
-.schedule-nav-label {
-  text-align: center;
-  font-weight: 600;
-  color: #cbd5e1;
-}
-
 .schedule-nav button:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+.selected-courses-panel {
+  padding: 18px 20px;
 }
 
 .schedule-summary {
@@ -194,7 +267,38 @@ textarea {
   align-items: center;
   gap: 16px;
   flex-wrap: wrap;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
+}
+
+.selected-course-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 10px;
+}
+
+.selected-course-item {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.selected-course-code {
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.selected-course-name {
+  color: #dbe3f3;
+}
+
+.selected-course-section {
+  color: #9fb0c8;
+  font-size: 0.9rem;
 }
 
 .schedule-list {
@@ -213,23 +317,43 @@ textarea {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.schedule-card-header strong {
+  font-size: 1.1rem;
+}
+
+.schedule-card-section {
+  font-size: 0.95rem;
+  color: #cbd5e1;
 }
 
 .schedule-card-name {
-  font-size: 1.05rem;
-  font-weight: 500;
+  font-size: 1rem;
   color: #e5e7eb;
+  font-weight: 500;
   margin-bottom: 10px;
 }
 
 .schedule-card-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 10px;
   color: #9fb0c8;
   font-size: 0.92rem;
   margin-bottom: 12px;
+}
+
+.schedule-card-times {
+  display: grid;
+  gap: 6px;
+}
+
+.schedule-time-row {
+  color: #dbe3f3;
+  font-size: 0.95rem;
 }
 
 .meeting-list {
@@ -245,15 +369,19 @@ textarea {
 
 .timetable-wrapper {
   overflow-x: auto;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.02);
-  padding: 10px;
+  overflow-y: hidden;
+  width: 100%;
+  padding: 4px 0 0;
+}
+
+.timetable-inner {
+  min-width: 940px;
 }
 
 .timetable-header,
 .timetable-body {
   display: grid;
-  grid-template-columns: 110px repeat(5, minmax(150px, 1fr));
+  grid-template-columns: 100px repeat(5, 168px);
 }
 
 .time-column-header,
@@ -286,31 +414,38 @@ textarea {
 
 .meeting-block {
   position: absolute;
-  left: 10px;
-  right: 10px;
-  border-radius: 14px;
-  padding: 10px 12px;
+  left: 6px;
+  right: 6px;
+  border-radius: 12px;
+  padding: 6px 8px;
   color: white;
   overflow: hidden;
-  font-size: 0.82rem;
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.22);
 }
 
 .meeting-course-code {
   font-weight: 800;
-  font-size: 0.95rem;
-  margin-bottom: 4px;
+  font-size: 0.85rem;
+  line-height: 1.1;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.meeting-section {
+  font-size: 0.68rem;
+  line-height: 1.1;
+  opacity: 0.9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .meeting-course-name {
   font-size: 0.8rem;
   opacity: 0.95;
   margin-bottom: 4px;
-}
-
-.meeting-section {
-  font-size: 0.74rem;
-  opacity: 0.88;
 }
 
 .course-color-1 {
@@ -337,12 +472,20 @@ textarea {
   background: #0891b2;
 }
 
-@media (max-width: 1100px) {
+.schedule-grid-panel {
+  padding-bottom: 16px;
+}
+
+@media (max-width: 900px) {
   .app-layout {
     grid-template-columns: 1fr;
   }
 
   .form-row {
     grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: static;
   }
 }

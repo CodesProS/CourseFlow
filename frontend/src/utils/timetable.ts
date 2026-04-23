@@ -1,5 +1,4 @@
-import type { MeetingTime } from "@backend/models/Course";
-import type { ScheduledCourse } from "@backend/models/Schedule";
+import type { MeetingTime, ScheduledCourse } from "../types";
 
 export const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"];
 
@@ -18,7 +17,7 @@ export const DAY_LABEL_MAP: Record<string, string> = {
 
 export const GRID_START_HOUR = 8;
 export const GRID_END_HOUR = 20; // 8 PM
-export const HOUR_HEIGHT = 60; // pixels per hour
+export const HOUR_HEIGHT = 52; // pixels per hour
 
 export function parseTimeToMinutes(time: string): number {
     const [hours, minutes] = time.split(":").map(Number);

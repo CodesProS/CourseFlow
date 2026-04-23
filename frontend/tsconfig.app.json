@@ -22,11 +22,7 @@
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true,
-    "baseUrl": ".",
-    "paths": {
-      "@backend/*": ["../backend/src/*"]
-    }
+    "noUncheckedSideEffectImports": true
   },
   "include": ["src"]
 }

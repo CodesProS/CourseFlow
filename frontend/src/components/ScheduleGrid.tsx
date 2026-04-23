@@ -1,4 +1,4 @@
-import type { Schedule } from "@backend/models/Schedule";
+import type { Schedule } from "../types";
 import {
     DAYS,
     flattenScheduleMeetings,
@@ -32,56 +32,57 @@ export default function ScheduleGrid({ schedule }: ScheduleGridProps) {
             <h3>Weekly Timetable</h3>
 
             <div className="timetable-wrapper">
-                <div className="timetable-header">
-                    <div className="time-column-header" />
-                    {DAYS.map((day) => (
-                        <div key={day} className="day-header">
-                            {day}
-                        </div>
-                    ))}
-                </div>
-
-                <div className="timetable-body">
-                    <div className="time-column">
-                        {timeLabels.map((label) => (
-                            <div key={label} className="time-label" style={{ height: `${HOUR_HEIGHT}px` }}>
-                                {label}
+                <div className="timetable-inner">
+                    <div className="timetable-header">
+                        <div className="time-column-header" />
+                        {DAYS.map((day) => (
+                            <div key={day} className="day-header">
+                                {day}
                             </div>
                         ))}
                     </div>
 
-                    {DAYS.map((day) => (
-                        <div key={day} className="day-column">
-                            {timeLabels.map((_, index) => (
-                                <div
-                                    key={`${day}-${index}`}
-                                    className="hour-slot"
-                                    style={{ height: `${HOUR_HEIGHT}px` }}
-                                />
+                    <div className="timetable-body">
+                        <div className="time-column">
+                            {timeLabels.map((label) => (
+                                <div key={label} className="time-label" style={{ height: `${HOUR_HEIGHT}px` }}>
+                                    {label}
+                                </div>
                             ))}
-
-                            {flattenedMeetings
-                                .filter(({ meeting }) => normalizeDay(meeting.day) === day)
-                                .map(({ meeting, scheduledCourse }, index) => {
-                                    const style = getMeetingBlockStyle(meeting);
-                                    const colorClass = getCourseColor(scheduledCourse.course.code);
-
-                                    return (
-                                        <div
-                                            key={`${scheduledCourse.course.code}-${scheduledCourse.section.sectionId}-${index}`}
-                                            className={`meeting-block ${colorClass}`}
-                                            style={style}
-                                        >
-                                            <div className="meeting-course-code">{scheduledCourse.course.code}</div>
-                                            <div className="meeting-course-name">{scheduledCourse.course.name}</div>
-                                            <div className="meeting-section">
-                                                {scheduledCourse.section.sectionId} • {meeting.startTime}–{meeting.endTime}
-                                            </div>
-                                        </div>
-                                    );
-                                })}
                         </div>
-                    ))}
+
+                        {DAYS.map((day) => (
+                            <div key={day} className="day-column">
+                                {timeLabels.map((_, index) => (
+                                    <div
+                                        key={`${day}-${index}`}
+                                        className="hour-slot"
+                                        style={{ height: `${HOUR_HEIGHT}px` }}
+                                    />
+                                ))}
+
+                                {flattenedMeetings
+                                    .filter(({ meeting }) => normalizeDay(meeting.day) === day)
+                                    .map(({ meeting, scheduledCourse }, index) => {
+                                        const style = getMeetingBlockStyle(meeting);
+                                        const colorClass = getCourseColor(scheduledCourse.course.code);
+
+                                        return (
+                                            <div
+                                                key={`${scheduledCourse.course.code}-${scheduledCourse.section.sectionId}-${index}`}
+                                                className={`meeting-block ${colorClass}`}
+                                                style={style}
+                                            >
+                                                <div className="meeting-course-code">{scheduledCourse.course.code}</div>
+                                                <div className="meeting-section">
+                                                    {meeting.startTime}–{meeting.endTime}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>

@@ -1,21 +1,29 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "CourseFlow backend: course catalog + schedule planner",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon src/index.ts",
+    "dev": "nodemon src/server.ts",
+    "dev:cli": "ts-node src/index.ts",
     "build": "tsc",
-    "start": "node dist/index.js"
+    "start": "node dist/server.js",
+    "ingest": "ts-node src/scripts/ingest.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
-    "@types/node": "^25.5.0",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^4.17.25",
+    "@types/node": "^20.11.0",
     "nodemon": "^3.1.14",
     "ts-node": "^10.9.2",
-    "typescript": "^6.0.2"
+    "typescript": "~5.9.3"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^4.22.1"
   }
 }

@@ -1,17 +1,18 @@
 import { useMemo, useState } from "react";
-import type { Schedule } from "@backend/models/Schedule";
-import type { SearchCriteria } from "@backend/models/SearchCriteria";
+import type { Schedule, SearchCriteria } from "./types";
 
 import SearchForm from "./components/SearchForm";
 import ScheduleNavigator from "./components/ScheduleNavigator";
 import ScheduleList from "./components/ScheduleList";
 import ScheduleGrid from "./components/ScheduleGrid";
-import { runPlanner } from "./services/plannerAdapter";
+import { usePlanMutation } from "./api/hooks";
 import "./App.css";
 
 export default function App() {
-  const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  const planMutation = usePlanMutation();
+  const schedules: Schedule[] = planMutation.data?.schedules ?? [];
 
   const currentSchedule = useMemo(() => {
     if (schedules.length === 0) return null;
@@ -22,31 +23,34 @@ export default function App() {
     completedCourses: string[];
     criteria: SearchCriteria;
   }) => {
-    const generatedSchedules = runPlanner(payload);
-    setSchedules(generatedSchedules);
     setCurrentIndex(0);
+    planMutation.mutate(payload);
   };
+
+  const statusText = (() => {
+    if (planMutation.isPending) return "Generating…";
+    if (planMutation.isError) return `Error: ${planMutation.error.message}`;
+    if (!planMutation.isSuccess) return "Fill out your preferences, then click Generate.";
+    if (schedules.length === 0) return "No valid schedules found — try loosening your constraints.";
+    return `${schedules.length} valid schedule(s) found.`;
+  })();
 
   return (
     <div className="app-shell">
       <header className="app-header">
         <h1>CourseFlow</h1>
-        <p>Generate ranked, conflict-free schedules from your course preferences.</p>
+        <p>Generate ranked, conflict-free schedules from your UW-Madison course preferences.</p>
       </header>
 
       <main className="app-layout">
         <aside className="sidebar">
-          <SearchForm onGenerate={handleGenerate} />
+          <SearchForm onGenerate={handleGenerate} isSubmitting={planMutation.isPending} />
         </aside>
 
         <section className="content">
           <div className="panel">
             <h3>Results</h3>
-            <p>
-              {schedules.length === 0
-                ? "No schedules generated yet."
-                : `${schedules.length} valid schedule(s) found.`}
-            </p>
+            <p>{statusText}</p>
           </div>
 
           <ScheduleNavigator
@@ -58,8 +62,8 @@ export default function App() {
             }
           />
 
-          <ScheduleList schedule={currentSchedule} />
           <ScheduleGrid schedule={currentSchedule} />
+          <ScheduleList schedule={currentSchedule} />
         </section>
       </main>
     </div>
