@@ -12,9 +12,8 @@ interface PlanRequestBody {
     criteria?: SearchCriteria;
 }
 
-// Cap on returned schedules. generateSchedules is O(2^n) worst case so
-// the backtracker can still blow up internally — this just keeps the
-// response small. TODO: push the cap into the backtracker itself.
+// Cap on returned schedules — passed into generateSchedules so the
+// backtracker short-circuits instead of exploring all 2^n combinations.
 const MAX_SCHEDULES = 50;
 
 // POST /plan — body: { completedCourses?, criteria? }
@@ -38,11 +37,12 @@ router.post("/", (req, res) => {
         ranked,
         criteria.targetCreditsMin ?? 12,
         criteria.targetCreditsMax ?? 18,
+        MAX_SCHEDULES,
     );
 
     res.json({
         totalFound: schedules.length,
-        schedules: schedules.slice(0, MAX_SCHEDULES),
+        schedules,
     });
 });
 
