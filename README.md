@@ -3,7 +3,7 @@
 A course scheduler for UW-Madison students. Pick your interests, breadth requirements, and credit range — CourseFlow generates ranked, conflict-free schedules from the real course catalog.
 
 **Live demo:** https://courseflow.vercel.app <!-- TODO: replace with your actual Vercel URL -->
-**API:** https://courseflow-api.fly.dev/health <!-- TODO: replace with your actual Fly URL -->
+course-flow-three.vercel.app
 
 ![Screenshot](./docs/screenshot.png) <!-- TODO: drop a PNG here after deploy -->
 
