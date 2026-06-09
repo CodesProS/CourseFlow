@@ -2,8 +2,10 @@
 
 A course scheduler for UW-Madison students. Pick your interests, breadth requirements, and credit range — CourseFlow generates ranked, conflict-free schedules from the real course catalog.
 
-**Live demo:** https://course-flow-three.vercel.app <!-- TODO: replace with your actual Vercel URL -->
+**Live demo:** https://course-flow-three.vercel.app
+**API:** https://courseflow-api-zbc1.onrender.com/health
 
+> **Heads up:** the backend runs on Render's free tier, which sleeps after 15 minutes of inactivity. First request after idle takes ~30–60s to cold-start; subsequent requests are snappy.
 
 ![Screenshot](./docs/screenshot.png) <!-- TODO: drop a PNG here after deploy -->
 
@@ -29,7 +31,7 @@ Backed by real UW-Madison data — course listings, prerequisites, meeting times
 ```
 ┌─────────────────────┐   HTTPS/JSON    ┌──────────────────────┐
 │  React + Vite       │ ───────────────>│  Express + Node      │
-│  (Vercel)           │                  │  (Fly.io, Chicago)   │
+│  (Vercel)           │                  │  (Render, Docker)    │
 │                     │ <────────────── │                      │
 │  TanStack Query     │                  │  Repository pattern  │
 │  react-select       │                  │  courses.json (54)   │
@@ -84,18 +86,15 @@ Edit `TARGET_SUBJECTS` in `src/scripts/ingest.ts` to control which departments a
 
 ## Deployment
 
-### Backend → Fly.io
+### Backend → Render.com
 
-```bash
-# One-time
-cd backend
-fly auth signup          # or fly auth login
-fly launch --no-deploy   # accept the existing fly.toml; pick a unique app name if prompted
-fly secrets set CORS_ORIGIN="https://<your-vercel-url>"
+Render reads the `backend/Dockerfile` directly — no extra config file needed.
 
-# Every deploy
-fly deploy
-```
+1. Sign up at https://render.com with GitHub.
+2. **New +** → **Web Service** → connect the CourseFlow repo.
+3. Set **Root Directory** to `backend`, **Runtime** to *Docker*, **Instance Type** to *Free*.
+4. Add env vars: `NODE_ENV=production`, `PORT=3001`.
+5. Deploy. After the frontend is live, add `CORS_ORIGIN=https://<your-vercel-url>` to trigger an auto-redeploy.
 
 ### Frontend → Vercel
 
@@ -103,7 +102,7 @@ fly deploy
 cd frontend
 # Easiest: connect the GitHub repo at https://vercel.com/new and point it at frontend/
 # Then in Vercel → Project Settings → Environment Variables, set:
-#   VITE_API_BASE_URL = https://<your-fly-app>.fly.dev
+#   VITE_API_BASE_URL = https://<your-render-app>.onrender.com
 ```
 
 Any push to `main` auto-deploys.
@@ -123,7 +122,7 @@ Any push to `main` auto-deploys.
 | Frontend   | React 19, TypeScript, Vite, TanStack Query, react-select |
 | Backend    | Express, TypeScript, Node 20                          |
 | Data       | uw-coursemap (ingested at build time)                 |
-| Hosting    | Fly.io (API, Docker), Vercel (static frontend)        |
+| Hosting    | Render (API, Docker), Vercel (static frontend)        |
 
 ## Roadmap
 
