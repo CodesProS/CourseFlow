@@ -1,7 +1,11 @@
 import { Course } from "../models/Course";
 import { SearchCriteria } from "../models/SearchCriteria";
 
-export function scoreCourse(course: Course, criteria: SearchCriteria): number {
+export const REQUIREMENT_POINTS = 5;
+
+// Points that belong to the course itself and add up linearly across a
+// schedule: interests, preferred tags, difficulty.
+export function preferenceScore(course: Course, criteria: SearchCriteria): number {
     let score = 0;
 
     // Interest match
@@ -22,24 +26,6 @@ export function scoreCourse(course: Course, criteria: SearchCriteria): number {
         }
     }
 
-    // Needed breadth match
-    if (
-        criteria.neededBreadth &&
-        course.breadth &&
-        criteria.neededBreadth.includes(course.breadth)
-    ) {
-        score += 5;
-    }
-
-    // Needed gen ed match
-    if (criteria.neededGenEd && course.genEd) {
-        for (const genEd of course.genEd) {
-            if (criteria.neededGenEd.includes(genEd)) {
-                score += 5;
-            }
-        }
-    }
-
     // Difficulty preference
     if (criteria.maxDifficulty !== undefined) {
         if (course.difficulty <= criteria.maxDifficulty) {
@@ -52,6 +38,41 @@ export function scoreCourse(course: Course, criteria: SearchCriteria): number {
     return score;
 }
 
+// Needed breadth/gen-ed requirements this course fills, as stable keys.
+// A schedule should only earn each requirement once, so the scheduler
+// tracks these separately instead of summing them per course.
+export function requirementsFilled(course: Course, criteria: SearchCriteria): string[] {
+    const filled: string[] = [];
+
+    // Needed breadth match
+    if (
+        criteria.neededBreadth &&
+        course.breadth &&
+        criteria.neededBreadth.includes(course.breadth)
+    ) {
+        filled.push(`breadth:${course.breadth}`);
+    }
+
+    // Needed gen ed match
+    if (criteria.neededGenEd && course.genEd) {
+        for (const genEd of course.genEd) {
+            if (criteria.neededGenEd.includes(genEd)) {
+                filled.push(`genEd:${genEd}`);
+            }
+        }
+    }
+
+    return filled;
+}
+
+export function scoreCourse(course: Course, criteria: SearchCriteria): number {
+    return (
+        preferenceScore(course, criteria) +
+        REQUIREMENT_POINTS * requirementsFilled(course, criteria).length
+    );
+}
+
 export function rankCourses(courses: Course[], criteria: SearchCriteria): Course[] {
-    return [...courses].sort((a, b) => scoreCourse(b, criteria) - scoreCourse(a, criteria));
+    const scores = new Map(courses.map((c) => [c, scoreCourse(c, criteria)]));
+    return [...courses].sort((a, b) => scores.get(b)! - scores.get(a)!);
 }

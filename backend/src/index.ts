@@ -33,17 +33,13 @@ for (const course of rankedCourses) {
     );
 }
 
-const schedules = generateSchedules(
-    rankedCourses,
-    criteria.targetCreditsMin ?? 12,
-    criteria.targetCreditsMax ?? 15
-);
+const schedules = generateSchedules(rankedCourses, criteria);
 
 console.log(`\nGenerated ${schedules.length} valid schedules:\n`);
 
 schedules.forEach((schedule, index) => {
     console.log(`================ Schedule ${index + 1} ================`);
-    console.log(`Total Credits: ${schedule.totalCredits}`);
+    console.log(`Total Credits: ${schedule.totalCredits} | Score: ${schedule.score}`);
 
     for (const scheduledCourse of schedule.courses) {
         console.log(

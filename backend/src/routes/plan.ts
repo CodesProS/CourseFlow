@@ -12,8 +12,7 @@ interface PlanRequestBody {
     criteria?: SearchCriteria;
 }
 
-// Cap on returned schedules — passed into generateSchedules so the
-// backtracker short-circuits instead of exploring all 2^n combinations.
+// Number of top-scoring schedules to return.
 const MAX_SCHEDULES = 50;
 
 // POST /plan — body: { completedCourses?, criteria? }
@@ -33,12 +32,7 @@ router.post("/", (req, res) => {
 
     const available = getAvailableCourses(courseRepository.listAll(), completed);
     const ranked = rankCourses(available, criteria);
-    const schedules = generateSchedules(
-        ranked,
-        criteria.targetCreditsMin ?? 12,
-        criteria.targetCreditsMax ?? 18,
-        MAX_SCHEDULES,
-    );
+    const schedules = generateSchedules(ranked, criteria, MAX_SCHEDULES);
 
     res.json({
         totalFound: schedules.length,
