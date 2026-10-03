@@ -75,10 +75,10 @@ export default function SearchForm({ onGenerate, isSubmitting = false }: SearchF
     const metaQuery = useCoursesMeta();
     const coursesQuery = useCourses();
 
+    // Courses entered by hand. Transcript courses are kept separately and
+    // shown as one summary card rather than dozens of chips.
     const [completedCourses, setCompletedCourses] = useState<Option[]>([]);
-    // Codes the last transcript import added, so a re-import or "Remove"
-    // replaces them without touching courses entered by hand.
-    const [transcriptCodes, setTranscriptCodes] = useState<Set<string>>(new Set());
+    const [transcriptCodes, setTranscriptCodes] = useState<string[]>([]);
     const [interestsInput, setInterestsInput] = useState("");
     const [preferredTags, setPreferredTags] = useState<Option[]>([]);
     const [neededBreadth, setNeededBreadth] = useState<Option[]>([]);
@@ -96,30 +96,15 @@ export default function SearchForm({ onGenerate, isSubmitting = false }: SearchF
         [coursesQuery.data],
     );
 
-    const courseLabels = useMemo(
-        () => new Map(courseOptions.map((o) => [o.value, o.label])),
-        [courseOptions],
-    );
-
-    const addCompletedCourses = (added: Option[]) => {
-        setCompletedCourses((prev) => {
-            const seen = new Set(prev.map((o) => o.value));
-            return [...prev, ...added.filter((o) => !seen.has(o.value))];
-        });
-    };
-
     const handleTranscript = (courses: TranscriptCourse[]) => {
-        const imported = courses.map((c) => ({
-            value: c.code,
-            label: courseLabels.get(c.code) ?? `${c.displayCode} — ${c.title}`,
-        }));
-        setCompletedCourses((prev) => {
-            const kept = prev.filter((o) => !transcriptCodes.has(o.value));
-            const seen = new Set(kept.map((o) => o.value));
-            return [...kept, ...imported.filter((o) => !seen.has(o.value))];
-        });
-        setTranscriptCodes(new Set(imported.map((o) => o.value)));
+        setTranscriptCodes(courses.map((c) => c.code));
     };
+
+    // Don't offer courses the transcript already covers.
+    const manualOptions = useMemo(() => {
+        const imported = new Set(transcriptCodes);
+        return courseOptions.filter((o) => !imported.has(o.value));
+    }, [courseOptions, transcriptCodes]);
 
     const tagOptions = useMemo(() => toOptions(metaQuery.data?.tags ?? []), [metaQuery.data]);
     const breadthOptions = useMemo(() => toOptions(metaQuery.data?.breadths ?? []), [metaQuery.data]);
@@ -138,7 +123,8 @@ export default function SearchForm({ onGenerate, isSubmitting = false }: SearchF
             targetCreditsMax: targetMaxCredits === "" ? undefined : Number(targetMaxCredits),
         };
 
-        onGenerate({ completedCourses: fromOptions(completedCourses), criteria });
+        const completed = new Set([...transcriptCodes, ...fromOptions(completedCourses)]);
+        onGenerate({ completedCourses: [...completed], criteria });
     };
 
     const metaLoading = metaQuery.isLoading || coursesQuery.isLoading;
@@ -159,18 +145,26 @@ export default function SearchForm({ onGenerate, isSubmitting = false }: SearchF
                 <TranscriptImport onApply={handleTranscript} />
                 <CreatableSelect
                     isMulti
-                    options={courseOptions}
+                    options={manualOptions}
                     value={completedCourses}
                     onChange={(v) => setCompletedCourses([...v])}
                     // Prereqs like MATH221 aren't in the catalog, so allow any code.
                     onCreateOption={(input) => {
                         const code = normalizeCode(input);
-                        if (code) addCompletedCourses([{ value: code, label: code }]);
+                        if (code && !completedCourses.some((o) => o.value === code)) {
+                            setCompletedCourses([...completedCourses, { value: code, label: code }]);
+                        }
                     }}
                     formatCreateLabel={(input) => `Add "${normalizeCode(input)}"`}
                     // Chips show just the code; the menu shows code and title.
                     formatOptionLabel={(o, { context }) => (context === "value" ? o.value : o.label)}
-                    placeholder={metaLoading ? "Loading courses…" : "Search or type e.g. MATH221"}
+                    placeholder={
+                        metaLoading
+                            ? "Loading courses…"
+                            : transcriptCodes.length > 0
+                              ? "Add other courses…"
+                              : "Or add courses, e.g. MATH221"
+                    }
                     isLoading={coursesQuery.isLoading}
                     styles={selectStyles}
                     classNamePrefix="rs"
