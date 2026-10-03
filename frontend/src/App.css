@@ -489,3 +489,157 @@ textarea {
     position: static;
   }
 }
+/* Transcript import */
+.transcript-import {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.secondary-btn {
+  width: 100%;
+  border: 1px dashed #475569;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-weight: 600;
+  cursor: pointer;
+  background: transparent;
+  color: #dbe3f3;
+}
+
+.secondary-btn:hover:not(:disabled) {
+  border-color: #60a5fa;
+  background: rgba(96, 165, 250, 0.08);
+}
+
+.secondary-btn:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.link-btn {
+  border: none;
+  background: none;
+  padding: 0;
+  color: #93c5fd;
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: inherit;
+}
+
+.transcript-hint {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #7c8aa5;
+  text-align: left;
+}
+
+.transcript-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin: 0;
+}
+
+.transcript-stats div {
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.transcript-stat-wide {
+  grid-column: 1 / -1;
+}
+
+.transcript-stats dt {
+  font-size: 0.7rem;
+  color: #7c8aa5;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.transcript-stats dd {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #f8fafc;
+  font-variant-numeric: tabular-nums;
+}
+
+.transcript-stats small {
+  font-size: 0.68rem;
+  color: #7c8aa5;
+}
+
+.transcript-courses {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 260px;
+  overflow-y: auto;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  text-align: left;
+}
+
+.transcript-courses li + li {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.transcript-courses label {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  column-gap: 8px;
+  row-gap: 2px;
+  padding: 7px 10px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.transcript-courses input {
+  width: auto;
+  margin: 0;
+}
+
+.transcript-course-code {
+  font-weight: 600;
+  color: #f8fafc;
+  white-space: nowrap;
+}
+
+.transcript-course-title {
+  grid-column: 2 / -1;
+  color: #7c8aa5;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.transcript-badge {
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: rgba(34, 197, 94, 0.15);
+  color: #86efac;
+}
+
+.transcript-badge.in-progress {
+  background: rgba(234, 179, 8, 0.15);
+  color: #fde68a;
+}
+
+.transcript-actions {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 8px;
+}
+
+.transcript-actions .primary-btn {
+  padding: 10px 14px;
+}

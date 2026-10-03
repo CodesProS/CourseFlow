@@ -1,8 +1,11 @@
 import { useMemo, useState } from "react";
 import Select from "react-select";
+import CreatableSelect from "react-select/creatable";
 import type { MultiValue } from "react-select";
 import type { SearchCriteria } from "../types";
+import type { TranscriptCourse } from "../transcript/parseTranscript";
 import { useCourses, useCoursesMeta } from "../api/hooks";
+import TranscriptImport from "./TranscriptImport";
 
 type SearchFormProps = {
     onGenerate: (payload: { completedCourses: string[]; criteria: SearchCriteria }) => void;
@@ -25,6 +28,9 @@ const toOptions = (values: string[]): Option[] =>
 
 const fromOptions = (opts: MultiValue<Option>): string[] =>
     opts.map((o) => o.value);
+
+// Catalog codes have no spaces: "COMP SCI 300" -> "COMPSCI300".
+const normalizeCode = (input: string) => input.toUpperCase().replace(/\s+/g, "");
 
 // react-select styling — dark theme to match the app shell.
 const selectStyles = {
@@ -79,6 +85,27 @@ export default function SearchForm({ onGenerate, isSubmitting = false }: SearchF
         [coursesQuery.data],
     );
 
+    const courseLabels = useMemo(
+        () => new Map(courseOptions.map((o) => [o.value, o.label])),
+        [courseOptions],
+    );
+
+    const addCompletedCourses = (added: Option[]) => {
+        setCompletedCourses((prev) => {
+            const seen = new Set(prev.map((o) => o.value));
+            return [...prev, ...added.filter((o) => !seen.has(o.value))];
+        });
+    };
+
+    const handleTranscript = (courses: TranscriptCourse[]) => {
+        addCompletedCourses(
+            courses.map((c) => ({
+                value: c.code,
+                label: courseLabels.get(c.code) ?? `${c.displayCode} — ${c.title}`,
+            })),
+        );
+    };
+
     const tagOptions = useMemo(() => toOptions(metaQuery.data?.tags ?? []), [metaQuery.data]);
     const breadthOptions = useMemo(() => toOptions(metaQuery.data?.breadths ?? []), [metaQuery.data]);
     const genEdOptions = useMemo(() => toOptions(metaQuery.data?.genEds ?? []), [metaQuery.data]);
@@ -112,19 +139,26 @@ export default function SearchForm({ onGenerate, isSubmitting = false }: SearchF
                 </p>
             )}
 
-            <label className="field">
+            <div className="field">
                 <span>Completed Courses</span>
-                <Select
+                <TranscriptImport onApply={handleTranscript} />
+                <CreatableSelect
                     isMulti
                     options={courseOptions}
                     value={completedCourses}
                     onChange={(v) => setCompletedCourses([...v])}
-                    placeholder={metaLoading ? "Loading courses…" : "Search e.g. MATH221"}
+                    // Prereqs like MATH221 aren't in the catalog, so allow any code.
+                    onCreateOption={(input) => {
+                        const code = normalizeCode(input);
+                        if (code) addCompletedCourses([{ value: code, label: code }]);
+                    }}
+                    formatCreateLabel={(input) => `Add "${normalizeCode(input)}"`}
+                    placeholder={metaLoading ? "Loading courses…" : "Search or type e.g. MATH221"}
                     isLoading={coursesQuery.isLoading}
                     styles={selectStyles}
                     classNamePrefix="rs"
                 />
-            </label>
+            </div>
 
             <label className="field">
                 <span>Interests (free text)</span>
