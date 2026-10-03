@@ -138,14 +138,12 @@ describe("parseTranscript", () => {
         expect(byCode("MATH221")[0].isElectiveCredit).toBe(false);
     });
 
-    it("totals credits and computes UW GPA from graded courses", () => {
+    it("totals earned and in-progress credits", () => {
         expect(summary).toEqual({
             earnedCredits: 18.69,
             uwCredits: 9,
             transferCredits: 9.69,
             inProgressCredits: 6,
-            // (12 + 10.5 + 9) / 9 — the W carries no GPA units.
-            gpa: 3.5,
         });
     });
 });

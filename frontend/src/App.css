@@ -27,7 +27,7 @@ body {
 
 .app-layout {
   display: grid;
-  grid-template-columns: 300px minmax(0, 1fr);
+  grid-template-columns: 360px minmax(0, 1fr);
   gap: 24px;
   align-items: start;
 }
@@ -85,12 +85,13 @@ body {
 }
 
 .search-form.panel {
-  padding: 18px;
+  padding: 20px;
+  text-align: left;
 }
 
 .search-form h2 {
   margin-bottom: 18px;
-  font-size: 1.8rem;
+  font-size: 1.35rem;
 }
 
 .field {
@@ -489,32 +490,92 @@ textarea {
     position: static;
   }
 }
+.form-row .field span {
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
 /* Transcript import */
-.transcript-import {
+.transcript-drop {
+  width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-}
-
-.secondary-btn {
-  width: 100%;
-  border: 1px dashed #475569;
-  border-radius: 12px;
-  padding: 10px 14px;
-  font-weight: 600;
-  cursor: pointer;
-  background: transparent;
+  align-items: center;
+  gap: 4px;
+  padding: 16px 12px;
+  border: 1.5px dashed #3b4a66;
+  border-radius: 14px;
+  background: rgba(96, 165, 250, 0.04);
   color: #dbe3f3;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
 }
 
-.secondary-btn:hover:not(:disabled) {
+.transcript-drop strong {
+  font-size: 0.95rem;
+}
+
+.transcript-drop span {
+  font-size: 0.78rem;
+  color: #7c8aa5;
+}
+
+.transcript-drop:hover:not(:disabled),
+.transcript-drop.dragging {
   border-color: #60a5fa;
-  background: rgba(96, 165, 250, 0.08);
+  background: rgba(96, 165, 250, 0.1);
 }
 
-.secondary-btn:disabled {
-  opacity: 0.6;
+.transcript-drop:disabled {
   cursor: progress;
+  opacity: 0.7;
+}
+
+.transcript-privacy {
+  margin: 0;
+  font-size: 0.72rem;
+  color: #64748b;
+}
+
+.transcript-error {
+  margin: 0;
+}
+
+.transcript-applied {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 12px;
+  background: rgba(34, 197, 94, 0.07);
+  text-align: left;
+}
+
+.transcript-applied-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.transcript-applied-text strong {
+  font-size: 0.85rem;
+  color: #f8fafc;
+}
+
+.transcript-applied-text span {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.transcript-applied-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
 }
 
 .link-btn {
@@ -523,123 +584,253 @@ textarea {
   padding: 0;
   color: #93c5fd;
   cursor: pointer;
-  text-decoration: underline;
-  font-size: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
 }
 
-.transcript-hint {
-  margin: 0;
-  font-size: 0.8rem;
+.link-btn:hover {
+  text-decoration: underline;
+}
+
+.link-btn.muted {
   color: #7c8aa5;
+  font-weight: 500;
+}
+
+/* Review dialog */
+.transcript-dialog {
+  width: min(720px, calc(100vw - 32px));
+  max-height: min(820px, calc(100vh - 48px));
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  background: #0b1226;
+  color: #e2e8f0;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+  overflow: hidden;
+}
+
+.transcript-dialog::backdrop {
+  background: rgba(3, 7, 18, 0.7);
+  backdrop-filter: blur(3px);
+}
+
+.transcript-review {
+  display: flex;
+  flex-direction: column;
+  max-height: inherit;
   text-align: left;
+}
+
+.transcript-review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 22px 24px 0;
+}
+
+.transcript-review-header h3 {
+  margin: 0 0 4px;
+  font-size: 1.25rem;
+  color: #f8fafc;
+}
+
+.transcript-review-header p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.icon-btn {
+  border: none;
+  background: rgba(255, 255, 255, 0.06);
+  color: #cbd5e1;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .transcript-stats {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
-  margin: 0;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 18px 24px 0;
 }
 
 .transcript-stats div {
-  background: #0f172a;
-  border: 1px solid #334155;
-  border-radius: 10px;
-  padding: 8px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   display: flex;
   flex-direction: column;
   gap: 2px;
-  min-width: 0;
-}
-
-.transcript-stat-wide {
-  grid-column: 1 / -1;
 }
 
 .transcript-stats dt {
-  font-size: 0.7rem;
-  color: #7c8aa5;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #94a3b8;
 }
 
 .transcript-stats dd {
   margin: 0;
-  font-size: 1.15rem;
+  font-size: 1.6rem;
   font-weight: 700;
   color: #f8fafc;
   font-variant-numeric: tabular-nums;
+  line-height: 1.2;
 }
 
 .transcript-stats small {
-  font-size: 0.68rem;
-  color: #7c8aa5;
+  font-size: 0.75rem;
+  color: #64748b;
 }
 
-.transcript-courses {
+.transcript-terms {
+  overflow-y: auto;
+  padding: 8px 24px 16px;
+  margin-top: 10px;
+}
+
+.transcript-term {
+  margin-top: 14px;
+}
+
+.transcript-term-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.transcript-term-header h4 {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #94a3b8;
+}
+
+.transcript-term ul {
   list-style: none;
   margin: 0;
   padding: 0;
-  max-height: 260px;
-  overflow-y: auto;
-  border: 1px solid #334155;
-  border-radius: 10px;
-  text-align: left;
 }
 
-.transcript-courses li + li {
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.transcript-courses label {
+.transcript-term label {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto 128px 1fr auto;
   align-items: center;
-  column-gap: 8px;
-  row-gap: 2px;
-  padding: 7px 10px;
-  font-size: 0.8rem;
+  gap: 12px;
+  padding: 8px 4px;
+  border-radius: 8px;
+  font-size: 0.875rem;
   cursor: pointer;
 }
 
-.transcript-courses input {
-  width: auto;
+.transcript-term label:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.transcript-term label.off .transcript-course-code,
+.transcript-term label.off .transcript-course-title {
+  color: #475569;
+  text-decoration: line-through;
+}
+
+.transcript-term input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
   margin: 0;
+  padding: 0;
+  accent-color: #3b82f6;
 }
 
 .transcript-course-code {
   font-weight: 600;
-  color: #f8fafc;
+  color: #f1f5f9;
   white-space: nowrap;
 }
 
 .transcript-course-title {
-  grid-column: 2 / -1;
-  color: #7c8aa5;
+  color: #94a3b8;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .transcript-badge {
-  font-size: 0.7rem;
-  padding: 2px 6px;
-  border-radius: 6px;
-  background: rgba(34, 197, 94, 0.15);
-  color: #86efac;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.12);
+  color: #cbd5e1;
+  white-space: nowrap;
 }
 
 .transcript-badge.in-progress {
-  background: rgba(234, 179, 8, 0.15);
+  background: rgba(234, 179, 8, 0.14);
   color: #fde68a;
 }
 
-.transcript-actions {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: 8px;
+.transcript-note {
+  margin: 16px 0 0;
+  font-size: 0.8rem;
+  color: #64748b;
 }
 
-.transcript-actions .primary-btn {
-  padding: 10px 14px;
+.transcript-review-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.transcript-review-footer .primary-btn {
+  width: auto;
+  padding: 10px 20px;
+}
+
+.ghost-btn {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: transparent;
+  color: #cbd5e1;
+  border-radius: 12px;
+  padding: 10px 18px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ghost-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+@media (max-width: 560px) {
+  .transcript-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .transcript-term label {
+    grid-template-columns: auto 1fr auto;
+  }
+
+  .transcript-course-title {
+    display: none;
+  }
 }

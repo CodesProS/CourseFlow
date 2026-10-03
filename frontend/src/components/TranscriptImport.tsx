@@ -1,76 +1,91 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
     plannerCourses,
     type ParsedTranscript,
     type TranscriptCourse,
-    type TranscriptSummary,
 } from "../transcript/parseTranscript";
 
 type TranscriptImportProps = {
+    // Replaces whatever the previous import added; [] removes it.
     onApply: (courses: TranscriptCourse[]) => void;
 };
 
-type State =
-    | { kind: "idle" }
-    | { kind: "reading" }
-    | { kind: "error"; message: string }
-    | { kind: "review"; transcript: ParsedTranscript; selected: Set<string> }
-    | { kind: "applied"; summary: TranscriptSummary; count: number };
+type Imported = { transcript: ParsedTranscript; selected: Set<string> };
 
 const formatCredits = (n: number) =>
     n.toLocaleString(undefined, { maximumFractionDigits: 1 });
 
-function SummaryStats({ summary }: { summary: TranscriptSummary }) {
-    return (
-        <dl className="transcript-stats">
-            <div className="transcript-stat-wide">
-                <dt>Credits earned</dt>
-                <dd>{formatCredits(summary.earnedCredits)}</dd>
-                <small>
-                    {formatCredits(summary.uwCredits)} UW · {formatCredits(summary.transferCredits)} transfer
-                </small>
-            </div>
-            <div>
-                <dt>In progress</dt>
-                <dd>{formatCredits(summary.inProgressCredits)}</dd>
-            </div>
-            <div>
-                <dt>UW GPA</dt>
-                <dd>{summary.gpa?.toFixed(3) ?? "—"}</dd>
-            </div>
-        </dl>
-    );
+function termLabel(term: string): string {
+    return term.startsWith("Transfer: ")
+        ? `Transfer credit · ${term.slice("Transfer: ".length)}`
+        : term.replace(/-\d{4}$/, ""); // "Fall 2025-2026" -> "Fall 2025"
+}
+
+function groupByTerm(courses: TranscriptCourse[]): [string, TranscriptCourse[]][] {
+    const groups = new Map<string, TranscriptCourse[]>();
+    for (const c of courses) {
+        const list = groups.get(c.term) ?? [];
+        list.push(c);
+        groups.set(c.term, list);
+    }
+    return [...groups];
+}
+
+function statusLabel(c: TranscriptCourse): string | null {
+    if (c.status === "in-progress") return "In progress";
+    if (c.isTransfer) return "Transfer";
+    return null;
 }
 
 export default function TranscriptImport({ onApply }: TranscriptImportProps) {
-    const [state, setState] = useState<State>({ kind: "idle" });
+    const [reading, setReading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [dragging, setDragging] = useState(false);
+    // `draft` is what the open dialog is editing; `applied` is what's in the form.
+    const [draft, setDraft] = useState<Imported | null>(null);
+    const [applied, setApplied] = useState<Imported | null>(null);
+
     const fileInput = useRef<HTMLInputElement>(null);
+    const dialog = useRef<HTMLDialogElement>(null);
+
+    useEffect(() => {
+        if (draft && !dialog.current?.open) dialog.current?.showModal();
+        if (!draft && dialog.current?.open) dialog.current.close();
+    }, [draft]);
 
     const handleFile = async (file: File | undefined) => {
         if (!file) return;
-        setState({ kind: "reading" });
+        setError(null);
+        setReading(true);
         try {
             // Lazy: pdf.js is ~1MB and most visitors never upload.
             const { readTranscript } = await import("../transcript/readTranscript");
             const transcript = await readTranscript(file);
             const usable = plannerCourses(transcript.courses);
             if (usable.length === 0) {
-                setState({
-                    kind: "error",
-                    message: "Couldn't find any courses. Is this a UW-Madison transcript PDF?",
-                });
+                setError("Couldn't find any courses. Is this a UW-Madison transcript PDF?");
                 return;
             }
-            setState({
-                kind: "review",
-                transcript,
-                selected: new Set(usable.map((c) => c.code)),
-            });
+            setDraft({ transcript, selected: new Set(usable.map((c) => c.code)) });
         } catch {
-            setState({ kind: "error", message: "Couldn't read that file as a PDF." });
+            setError("Couldn't read that file as a PDF.");
         } finally {
+            setReading(false);
             if (fileInput.current) fileInput.current.value = "";
         }
+    };
+
+    const confirm = () => {
+        if (!draft) return;
+        const usable = plannerCourses(draft.transcript.courses);
+        onApply(usable.filter((c) => draft.selected.has(c.code)));
+        setApplied(draft);
+        setDraft(null);
+    };
+
+    const remove = () => {
+        onApply([]);
+        setApplied(null);
     };
 
     const picker = (
@@ -82,106 +97,201 @@ export default function TranscriptImport({ onApply }: TranscriptImportProps) {
             onChange={(e) => handleFile(e.target.files?.[0])}
         />
     );
-    const openPicker = () => fileInput.current?.click();
-
-    if (state.kind === "review") {
-        const { transcript, selected } = state;
-        const usable = plannerCourses(transcript.courses);
-        const electiveCredits = transcript.courses
-            .filter((c) => c.isElectiveCredit && c.status === "completed")
-            .reduce((sum, c) => sum + c.earned, 0);
-
-        const toggle = (code: string) => {
-            const next = new Set(selected);
-            if (next.has(code)) next.delete(code);
-            else next.add(code);
-            setState({ ...state, selected: next });
-        };
-
-        const apply = () => {
-            onApply(usable.filter((c) => selected.has(c.code)));
-            setState({ kind: "applied", summary: transcript.summary, count: selected.size });
-        };
-
-        return (
-            <div className="transcript-import">
-                {picker}
-                <SummaryStats summary={transcript.summary} />
-                <p className="transcript-hint">
-                    Uncheck anything that looks wrong. In-progress courses count as taken for
-                    prerequisites.
-                </p>
-                <ul className="transcript-courses">
-                    {usable.map((c) => (
-                        <li key={c.code}>
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    checked={selected.has(c.code)}
-                                    onChange={() => toggle(c.code)}
-                                />
-                                <span className="transcript-course-code">{c.displayCode}</span>
-                                <span className={`transcript-badge ${c.status}`}>
-                                    {c.status === "in-progress"
-                                        ? "In progress"
-                                        : c.isTransfer
-                                          ? "Transfer"
-                                          : c.grade}
-                                </span>
-                                <span className="transcript-course-title">{c.title}</span>
-                            </label>
-                        </li>
-                    ))}
-                </ul>
-                {electiveCredits > 0 && (
-                    <p className="transcript-hint">
-                        Plus {formatCredits(electiveCredits)} credits of transfer elective credit
-                        (e.g. COMP SCI X12). These count toward totals but aren&apos;t specific
-                        courses.
-                    </p>
-                )}
-                <div className="transcript-actions">
-                    <button type="button" className="secondary-btn" onClick={() => setState({ kind: "idle" })}>
-                        Cancel
-                    </button>
-                    <button type="button" className="primary-btn" onClick={apply} disabled={selected.size === 0}>
-                        Use {selected.size} courses
-                    </button>
-                </div>
-            </div>
-        );
-    }
-
-    if (state.kind === "applied") {
-        return (
-            <div className="transcript-import">
-                {picker}
-                <SummaryStats summary={state.summary} />
-                <p className="transcript-hint">
-                    Added {state.count} courses from your transcript.{" "}
-                    <button type="button" className="link-btn" onClick={openPicker}>
-                        Import another
-                    </button>
-                </p>
-            </div>
-        );
-    }
 
     return (
-        <div className="transcript-import">
+        <>
             {picker}
-            {state.kind === "error" && <p className="error-text">{state.message}</p>}
-            <button
-                type="button"
-                className="secondary-btn"
-                onClick={openPicker}
-                disabled={state.kind === "reading"}
+
+            {applied ? (
+                <div className="transcript-applied">
+                    <div className="transcript-applied-text">
+                        <strong>
+                            {applied.selected.size} courses from transcript
+                        </strong>
+                        <span>
+                            {formatCredits(applied.transcript.summary.earnedCredits)} credits
+                            {applied.transcript.summary.inProgressCredits > 0 &&
+                                ` · ${formatCredits(applied.transcript.summary.inProgressCredits)} in progress`}
+                        </span>
+                    </div>
+                    <div className="transcript-applied-actions">
+                        <button type="button" className="link-btn" onClick={() => setDraft(applied)}>
+                            Review
+                        </button>
+                        <button type="button" className="link-btn muted" onClick={remove}>
+                            Remove
+                        </button>
+                    </div>
+                </div>
+            ) : (
+                <button
+                    type="button"
+                    className={`transcript-drop${dragging ? " dragging" : ""}`}
+                    onClick={() => fileInput.current?.click()}
+                    onDragOver={(e) => {
+                        e.preventDefault();
+                        setDragging(true);
+                    }}
+                    onDragLeave={() => setDragging(false)}
+                    onDrop={(e) => {
+                        e.preventDefault();
+                        setDragging(false);
+                        handleFile(e.dataTransfer.files[0]);
+                    }}
+                    disabled={reading}
+                >
+                    <strong>{reading ? "Reading transcript…" : "Import from transcript"}</strong>
+                    <span>Drop your UW-Madison PDF or click to browse</span>
+                </button>
+            )}
+
+            {error && <p className="error-text transcript-error">{error}</p>}
+            {!applied && (
+                <p className="transcript-privacy">Read on your device. Never uploaded.</p>
+            )}
+
+            <dialog
+                ref={dialog}
+                className="transcript-dialog"
+                onClose={() => setDraft(null)}
+                onClick={(e) => {
+                    // Click on the backdrop (the dialog element itself) closes it.
+                    if (e.target === e.currentTarget) setDraft(null);
+                }}
             >
-                {state.kind === "reading" ? "Reading transcript…" : "Import from transcript (PDF)"}
-            </button>
-            <p className="transcript-hint">
-                Read in your browser. Your transcript is never uploaded.
-            </p>
+                {draft && (
+                    <ReviewPanel
+                        draft={draft}
+                        onChange={(selected) => setDraft({ ...draft, selected })}
+                        onCancel={() => setDraft(null)}
+                        onConfirm={confirm}
+                    />
+                )}
+            </dialog>
+        </>
+    );
+}
+
+type ReviewPanelProps = {
+    draft: Imported;
+    onChange: (selected: Set<string>) => void;
+    onCancel: () => void;
+    onConfirm: () => void;
+};
+
+function ReviewPanel({ draft, onChange, onCancel, onConfirm }: ReviewPanelProps) {
+    const { transcript, selected } = draft;
+    const { summary } = transcript;
+    const usable = plannerCourses(transcript.courses);
+    const electiveCredits = transcript.courses
+        .filter((c) => c.isElectiveCredit && c.status === "completed")
+        .reduce((sum, c) => sum + c.earned, 0);
+
+    const setMany = (codes: string[], on: boolean) => {
+        const next = new Set(selected);
+        for (const code of codes) {
+            if (on) next.add(code);
+            else next.delete(code);
+        }
+        onChange(next);
+    };
+
+    return (
+        <div className="transcript-review">
+            <header className="transcript-review-header">
+                <div>
+                    <h3>Review your transcript</h3>
+                    <p>
+                        Uncheck anything that looks wrong. In-progress courses count as taken for
+                        prerequisites.
+                    </p>
+                </div>
+                <button type="button" className="icon-btn" onClick={onCancel} aria-label="Close">
+                    ×
+                </button>
+            </header>
+
+            <dl className="transcript-stats">
+                <div>
+                    <dt>Credits earned</dt>
+                    <dd>{formatCredits(summary.earnedCredits)}</dd>
+                    <small>
+                        {formatCredits(summary.uwCredits)} UW · {formatCredits(summary.transferCredits)} transfer
+                    </small>
+                </div>
+                <div>
+                    <dt>In progress</dt>
+                    <dd>{formatCredits(summary.inProgressCredits)}</dd>
+                    <small>credits this term</small>
+                </div>
+                <div>
+                    <dt>Courses found</dt>
+                    <dd>{usable.length}</dd>
+                    <small>{selected.size} selected</small>
+                </div>
+            </dl>
+
+            <div className="transcript-terms">
+                {groupByTerm(usable).map(([term, courses]) => {
+                    const codes = courses.map((c) => c.code);
+                    const allOn = codes.every((code) => selected.has(code));
+                    return (
+                        <section key={term} className="transcript-term">
+                            <div className="transcript-term-header">
+                                <h4>{termLabel(term)}</h4>
+                                <button
+                                    type="button"
+                                    className="link-btn muted"
+                                    onClick={() => setMany(codes, !allOn)}
+                                >
+                                    {allOn ? "Deselect all" : "Select all"}
+                                </button>
+                            </div>
+                            <ul>
+                                {courses.map((c) => (
+                                    <li key={c.code}>
+                                        <label className={selected.has(c.code) ? "" : "off"}>
+                                            <input
+                                                type="checkbox"
+                                                checked={selected.has(c.code)}
+                                                onChange={(e) => setMany([c.code], e.target.checked)}
+                                            />
+                                            <span className="transcript-course-code">{c.displayCode}</span>
+                                            <span className="transcript-course-title">{c.title}</span>
+                                            {statusLabel(c) && (
+                                                <span className={`transcript-badge ${c.status}`}>
+                                                    {statusLabel(c)}
+                                                </span>
+                                            )}
+                                        </label>
+                                    </li>
+                                ))}
+                            </ul>
+                        </section>
+                    );
+                })}
+                {electiveCredits > 0 && (
+                    <p className="transcript-note">
+                        Also counted: {formatCredits(electiveCredits)} credits of general transfer
+                        credit (e.g. COMP SCI X12). It isn&apos;t tied to a specific course, so it
+                        can&apos;t satisfy prerequisites.
+                    </p>
+                )}
+            </div>
+
+            <footer className="transcript-review-footer">
+                <button type="button" className="ghost-btn" onClick={onCancel}>
+                    Cancel
+                </button>
+                <button
+                    type="button"
+                    className="primary-btn"
+                    onClick={onConfirm}
+                    disabled={selected.size === 0}
+                >
+                    Add {selected.size} courses
+                </button>
+            </footer>
         </div>
     );
 }

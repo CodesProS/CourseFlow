@@ -50,13 +50,21 @@ const selectStyles = {
         background: state.isFocused ? "var(--surface-3, #242933)" : "transparent",
         color: "var(--text, #e6e6e6)",
     }),
+    valueContainer: (base: Record<string, unknown>) => ({
+        ...base,
+        maxHeight: 112,
+        overflowY: "auto" as const,
+    }),
     multiValue: (base: Record<string, unknown>) => ({
         ...base,
         background: "var(--accent-muted, #2d3748)",
+        borderRadius: 6,
     }),
     multiValueLabel: (base: Record<string, unknown>) => ({
         ...base,
         color: "var(--text, #e6e6e6)",
+        fontSize: "0.75rem",
+        fontWeight: 600,
     }),
     input: (base: Record<string, unknown>) => ({ ...base, color: "var(--text, #e6e6e6)" }),
     singleValue: (base: Record<string, unknown>) => ({ ...base, color: "var(--text, #e6e6e6)" }),
@@ -68,6 +76,9 @@ export default function SearchForm({ onGenerate, isSubmitting = false }: SearchF
     const coursesQuery = useCourses();
 
     const [completedCourses, setCompletedCourses] = useState<Option[]>([]);
+    // Codes the last transcript import added, so a re-import or "Remove"
+    // replaces them without touching courses entered by hand.
+    const [transcriptCodes, setTranscriptCodes] = useState<Set<string>>(new Set());
     const [interestsInput, setInterestsInput] = useState("");
     const [preferredTags, setPreferredTags] = useState<Option[]>([]);
     const [neededBreadth, setNeededBreadth] = useState<Option[]>([]);
@@ -98,12 +109,16 @@ export default function SearchForm({ onGenerate, isSubmitting = false }: SearchF
     };
 
     const handleTranscript = (courses: TranscriptCourse[]) => {
-        addCompletedCourses(
-            courses.map((c) => ({
-                value: c.code,
-                label: courseLabels.get(c.code) ?? `${c.displayCode} — ${c.title}`,
-            })),
-        );
+        const imported = courses.map((c) => ({
+            value: c.code,
+            label: courseLabels.get(c.code) ?? `${c.displayCode} — ${c.title}`,
+        }));
+        setCompletedCourses((prev) => {
+            const kept = prev.filter((o) => !transcriptCodes.has(o.value));
+            const seen = new Set(kept.map((o) => o.value));
+            return [...kept, ...imported.filter((o) => !seen.has(o.value))];
+        });
+        setTranscriptCodes(new Set(imported.map((o) => o.value)));
     };
 
     const tagOptions = useMemo(() => toOptions(metaQuery.data?.tags ?? []), [metaQuery.data]);
@@ -153,6 +168,8 @@ export default function SearchForm({ onGenerate, isSubmitting = false }: SearchF
                         if (code) addCompletedCourses([{ value: code, label: code }]);
                     }}
                     formatCreateLabel={(input) => `Add "${normalizeCode(input)}"`}
+                    // Chips show just the code; the menu shows code and title.
+                    formatOptionLabel={(o, { context }) => (context === "value" ? o.value : o.label)}
                     placeholder={metaLoading ? "Loading courses…" : "Search or type e.g. MATH221"}
                     isLoading={coursesQuery.isLoading}
                     styles={selectStyles}

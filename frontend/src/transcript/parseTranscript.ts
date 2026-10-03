@@ -25,7 +25,6 @@ export type TranscriptCourse = {
     attempted: number;
     earned: number;
     grade: string | null;
-    gradePoints: number;
     status: CourseStatus;
     isTransfer: boolean;
     // "COMP SCI X12" — generic credit in a subject, not a real course, so it
@@ -38,7 +37,6 @@ export type TranscriptSummary = {
     uwCredits: number;
     transferCredits: number;
     inProgressCredits: number;
-    gpa: number | null;
 };
 
 export type ParsedTranscript = {
@@ -66,9 +64,6 @@ const SESSION_RE = /^Session:/;
 const COURSE_CODE_RE = /^[A-Z][A-Z &]*?( X?\d{2,3})?$/;
 const COURSE_NUMBER_RE = /^X?\d{2,3}$/;
 const ELECTIVE_RE = /\sX\d+$/;
-
-// Letter grades that count toward GPA (UW scale).
-const GPA_GRADES = new Set(["A", "AB", "B", "BC", "C", "D", "F"]);
 
 const ROW_TOLERANCE = 2;
 
@@ -209,7 +204,6 @@ export function parseTranscript(pages: TextPage[]): ParsedTranscript {
                 attempted: toNumber(cells.get("attempted")),
                 earned,
                 grade,
-                gradePoints: toNumber(cells.get("points")),
                 status: statusOf(earned, grade),
                 isTransfer: transferFrom !== null,
                 isElectiveCredit: false,
@@ -230,19 +224,12 @@ function summarize(courses: TranscriptCourse[]): TranscriptSummary {
     let uwCredits = 0;
     let transferCredits = 0;
     let inProgressCredits = 0;
-    let gpaUnits = 0;
-    let gradePoints = 0;
 
     for (const c of courses) {
         if (c.isTransfer) transferCredits += c.earned;
         else uwCredits += c.earned;
 
         if (c.status === "in-progress") inProgressCredits += c.attempted;
-
-        if (!c.isTransfer && c.grade && GPA_GRADES.has(c.grade)) {
-            gpaUnits += c.attempted;
-            gradePoints += c.gradePoints;
-        }
     }
 
     return {
@@ -250,7 +237,6 @@ function summarize(courses: TranscriptCourse[]): TranscriptSummary {
         uwCredits: round(uwCredits),
         transferCredits: round(transferCredits),
         inProgressCredits: round(inProgressCredits),
-        gpa: gpaUnits > 0 ? round(gradePoints / gpaUnits) : null,
     };
 }
 
