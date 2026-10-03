@@ -48,6 +48,8 @@ const page1: TextPage = {
         // Left half: term header with transfer credit on the right.
         at(181, 237, "Fall 2025-2026"),
         at(51, 244, "Program:"),
+        at(50, 251, "Major:"),
+        at(114, 251, "No Major Code BS"),
         // Right half: transfer block.
         at(420, 107, "Transfer Credit from Example College"),
         ...header(RIGHT, 120),
@@ -78,12 +80,16 @@ const page2: TextPage = {
         at(109, 162, "UW-Madison Term Summary:"),
         at(238, 162, "6.000"),
         at(176, 292, "Spring 2025-2026"),
+        at(50, 306, "Major:"),
+        at(114, 306, "Data Science BS"),
         at(50, 331, "Session: Regular"),
         ...header(LEFT, 338),
         // Retake of a W'd course.
         ...course(LEFT, 347, "MATH 320", "Linear Algebra", "3.000", "3.000", "B", "9.000"),
         // Right half: current term, no grades yet, wrapped title.
         at(551, 259, "Fall 2026-2027"),
+        at(421, 273, "Major:"),
+        at(484, 273, "Computer Sciences BS"),
         at(420, 298, "Session: Regular"),
         ...header(RIGHT, 305),
         ...course(RIGHT, 321, "COMP SCI 407", "Found of Mobl", "3.000", "0.000", null, "0.000"),
@@ -92,7 +98,7 @@ const page2: TextPage = {
     ],
 };
 
-const { courses, summary } = parseTranscript([page1, page2]);
+const { courses, summary, major } = parseTranscript([page1, page2]);
 const byCode = (code: string) => courses.filter((c) => c.code === code);
 
 describe("parseTranscript", () => {
@@ -145,6 +151,20 @@ describe("parseTranscript", () => {
             transferCredits: 9.69,
             inProgressCredits: 6,
         });
+    });
+});
+
+describe("major", () => {
+    it("takes the latest declared major, skipping undeclared terms", () => {
+        expect(major).toBe("Computer Sciences BS");
+    });
+
+    it("is null when no major is ever declared", () => {
+        const undeclared: TextPage = {
+            width: 792,
+            items: [at(50, 251, "Major:"), at(114, 251, "No Major Code BS")],
+        };
+        expect(parseTranscript([undeclared]).major).toBeNull();
     });
 });
 

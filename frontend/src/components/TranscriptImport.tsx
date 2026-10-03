@@ -6,8 +6,8 @@ import {
 } from "../transcript/parseTranscript";
 
 type TranscriptImportProps = {
-    // Replaces whatever the previous import added; [] removes it.
-    onApply: (courses: TranscriptCourse[]) => void;
+    // Replaces whatever the previous import added; ([], null) removes it.
+    onApply: (courses: TranscriptCourse[], major: string | null) => void;
 };
 
 type Imported = { transcript: ParsedTranscript; selected: Set<string> };
@@ -78,13 +78,16 @@ export default function TranscriptImport({ onApply }: TranscriptImportProps) {
     const confirm = () => {
         if (!draft) return;
         const usable = plannerCourses(draft.transcript.courses);
-        onApply(usable.filter((c) => draft.selected.has(c.code)));
+        onApply(
+            usable.filter((c) => draft.selected.has(c.code)),
+            draft.transcript.major,
+        );
         setApplied(draft);
         setDraft(null);
     };
 
     const remove = () => {
-        onApply([]);
+        onApply([], null);
         setApplied(null);
     };
 
@@ -201,6 +204,9 @@ function ReviewPanel({ draft, onChange, onCancel, onConfirm }: ReviewPanelProps)
             <header className="transcript-review-header">
                 <div>
                     <h3>Review your transcript</h3>
+                    {transcript.major && (
+                        <p className="transcript-major">{transcript.major}</p>
+                    )}
                     <p>
                         Uncheck anything that looks wrong. In-progress courses count as taken for
                         prerequisites.

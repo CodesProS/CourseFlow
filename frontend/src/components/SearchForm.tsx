@@ -88,10 +88,13 @@ export default function SearchForm({ onGenerate, isSubmitting = false }: SearchF
     const metaQuery = useCoursesMeta();
     const coursesQuery = useCourses();
 
-    // Courses entered by hand. Transcript courses are kept separately and
-    // shown as one summary card rather than dozens of chips.
     const [completedCourses, setCompletedCourses] = useState<Option[]>([]);
-    const [transcriptCodes, setTranscriptCodes] = useState<string[]>([]);
+    // Codes the last transcript import added, so a re-import or "Remove"
+    // replaces them without touching courses entered by hand.
+    const [transcriptCodes, setTranscriptCodes] = useState<Set<string>>(new Set());
+    const [major, setMajor] = useState("");
+    // True while the major field still holds what the transcript filled in.
+    const [majorFromTranscript, setMajorFromTranscript] = useState(false);
     const [interestsInput, setInterestsInput] = useState("");
     const [preferredTags, setPreferredTags] = useState<Option[]>([]);
     const [neededBreadth, setNeededBreadth] = useState<Option[]>([]);
@@ -109,15 +112,32 @@ export default function SearchForm({ onGenerate, isSubmitting = false }: SearchF
         [coursesQuery.data],
     );
 
-    const handleTranscript = (courses: TranscriptCourse[]) => {
-        setTranscriptCodes(courses.map((c) => c.code));
-    };
+    const courseLabels = useMemo(
+        () => new Map(courseOptions.map((o) => [o.value, o.label])),
+        [courseOptions],
+    );
 
-    // Don't offer courses the transcript already covers.
-    const manualOptions = useMemo(() => {
-        const imported = new Set(transcriptCodes);
-        return courseOptions.filter((o) => !imported.has(o.value));
-    }, [courseOptions, transcriptCodes]);
+    const handleTranscript = (courses: TranscriptCourse[], transcriptMajor: string | null) => {
+        const imported = courses.map((c) => ({
+            value: c.code,
+            label: courseLabels.get(c.code) ?? `${c.displayCode} — ${c.title}`,
+        }));
+        setCompletedCourses((prev) => {
+            const kept = prev.filter((o) => !transcriptCodes.has(o.value));
+            const seen = new Set(kept.map((o) => o.value));
+            return [...kept, ...imported.filter((o) => !seen.has(o.value))];
+        });
+        setTranscriptCodes(new Set(imported.map((o) => o.value)));
+
+        if (transcriptMajor) {
+            setMajor(transcriptMajor);
+            setMajorFromTranscript(true);
+        } else if (majorFromTranscript) {
+            // Transcript removed: clear the major only if the user hadn't edited it.
+            setMajor("");
+            setMajorFromTranscript(false);
+        }
+    };
 
     const tagOptions = useMemo(() => toOptions(metaQuery.data?.tags ?? []), [metaQuery.data]);
     const breadthOptions = useMemo(() => toOptions(metaQuery.data?.breadths ?? []), [metaQuery.data]);
@@ -136,8 +156,7 @@ export default function SearchForm({ onGenerate, isSubmitting = false }: SearchF
             targetCreditsMax: targetMaxCredits === "" ? undefined : Number(targetMaxCredits),
         };
 
-        const completed = new Set([...transcriptCodes, ...fromOptions(completedCourses)]);
-        onGenerate({ completedCourses: [...completed], criteria });
+        onGenerate({ completedCourses: fromOptions(completedCourses), criteria });
     };
 
     const metaLoading = metaQuery.isLoading || coursesQuery.isLoading;
@@ -145,19 +164,38 @@ export default function SearchForm({ onGenerate, isSubmitting = false }: SearchF
 
     return (
         <form className="search-form panel" onSubmit={handleSubmit}>
-
             {metaError && (
                 <p className="error-text">
                     Couldn&apos;t reach the API: {metaError.message}. Is the backend running on :3001?
                 </p>
             )}
 
-            <h3 className="form-section">Courses you&apos;ve taken</h3>
+            <h3 className="form-section">About you</h3>
             <div className="field">
                 <TranscriptImport onApply={handleTranscript} />
+            </div>
+
+            <label className="field">
+                <span>
+                    Major
+                    {majorFromTranscript && <em className="field-hint">from transcript</em>}
+                </span>
+                <input
+                    type="text"
+                    placeholder="e.g. Computer Sciences BS"
+                    value={major}
+                    onChange={(e) => {
+                        setMajor(e.target.value);
+                        setMajorFromTranscript(false);
+                    }}
+                />
+            </label>
+
+            <div className="field">
+                <span>Completed courses</span>
                 <CreatableSelect
                     isMulti
-                    options={manualOptions}
+                    options={courseOptions}
                     value={completedCourses}
                     onChange={(v) => setCompletedCourses([...v])}
                     // Prereqs like MATH221 aren't in the catalog, so allow any code.
@@ -170,13 +208,7 @@ export default function SearchForm({ onGenerate, isSubmitting = false }: SearchF
                     formatCreateLabel={(input) => `Add "${normalizeCode(input)}"`}
                     // Chips show just the code; the menu shows code and title.
                     formatOptionLabel={(o, { context }) => (context === "value" ? o.value : o.label)}
-                    placeholder={
-                        metaLoading
-                            ? "Loading courses…"
-                            : transcriptCodes.length > 0
-                              ? "Add other courses…"
-                              : "Or add courses, e.g. MATH221"
-                    }
+                    placeholder={metaLoading ? "Loading courses…" : "Search or type e.g. MATH221"}
                     isLoading={coursesQuery.isLoading}
                     styles={selectStyles}
                     classNamePrefix="rs"

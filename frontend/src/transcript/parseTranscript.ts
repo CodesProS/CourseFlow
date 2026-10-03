@@ -42,6 +42,8 @@ export type TranscriptSummary = {
 export type ParsedTranscript = {
     courses: TranscriptCourse[];
     summary: TranscriptSummary;
+    // Most recent declared major, e.g. "Computer Sciences BS".
+    major: string | null;
 };
 
 type Row = { y: number; items: TextItem[] };
@@ -59,6 +61,9 @@ const COLUMN_HEADERS: Record<string, Column> = {
 const TERM_RE = /^(Fall|Spring|Summer) \d{4}(-\d{4})?$/;
 const TRANSFER_RE = /^Transfer Credit from (.+)$/;
 const SESSION_RE = /^Session:/;
+// Each term repeats "Major: <name>"; undeclared students show "No Major Code".
+const MAJOR_RE = /^Major:\s*(.+)$/;
+const UNDECLARED_RE = /^No Major Code/i;
 // Subject, optionally followed by a course number: "COMP SCI 300", "L I S 202",
 // "CHEM X01", or just "COMP SCI" when the number wraps onto the next line.
 const COURSE_CODE_RE = /^[A-Z][A-Z &]*?( X?\d{2,3})?$/;
@@ -136,6 +141,7 @@ export function parseTranscript(pages: TextPage[]): ParsedTranscript {
     const courses: TranscriptCourse[] = [];
     let term = "";
     let transferFrom: string | null = null;
+    let major: string | null = null;
 
     // Read order: page 1 left, page 1 right, page 2 left, ... A term that
     // starts at the bottom of one half continues at the top of the next.
@@ -153,6 +159,13 @@ export function parseTranscript(pages: TextPage[]): ParsedTranscript {
 
         for (const row of groupRows(half)) {
             const text = rowText(row);
+
+            // Terms are read in order, so the last declared major wins.
+            const majorMatch = MAJOR_RE.exec(text);
+            if (majorMatch) {
+                if (!UNDECLARED_RE.test(majorMatch[1])) major = majorMatch[1].trim();
+                continue;
+            }
 
             const transferMatch = TRANSFER_RE.exec(text);
             if (TERM_RE.test(text) || transferMatch || SESSION_RE.test(text)) {
@@ -217,7 +230,7 @@ export function parseTranscript(pages: TextPage[]): ParsedTranscript {
         course.isElectiveCredit = ELECTIVE_RE.test(course.displayCode);
     }
 
-    return { courses, summary: summarize(courses) };
+    return { courses, summary: summarize(courses), major };
 }
 
 function summarize(courses: TranscriptCourse[]): TranscriptSummary {
