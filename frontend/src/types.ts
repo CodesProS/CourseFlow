@@ -36,6 +36,7 @@ export type ScheduledCourse = {
 export type Schedule = {
     courses: ScheduledCourse[];
     totalCredits: number;
+    score?: number;
 };
 
 export type SearchCriteria = {

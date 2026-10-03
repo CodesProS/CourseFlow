@@ -2,87 +2,67 @@ import type { Schedule } from "../types";
 import {
     DAYS,
     flattenScheduleMeetings,
-    getCourseColor,
+    formatHourLabel,
+    formatTimeRange,
+    getCourseColors,
+    getHourRange,
     getMeetingBlockStyle,
-    getTimeLabels,
     HOUR_HEIGHT,
     normalizeDay,
 } from "../utils/timetable";
 
 type ScheduleGridProps = {
-    schedule: Schedule | null;
+    schedule: Schedule;
 };
 
 export default function ScheduleGrid({ schedule }: ScheduleGridProps) {
-    const timeLabels = getTimeLabels();
-
-    if (!schedule) {
-        return (
-            <div className="panel">
-                <h3>Weekly Timetable</h3>
-                <p>No schedule selected yet.</p>
-            </div>
-        );
-    }
-
-    const flattenedMeetings = flattenScheduleMeetings(schedule.courses);
+    const meetings = flattenScheduleMeetings(schedule.courses);
+    const colors = getCourseColors(schedule.courses);
+    const { start, end } = getHourRange(meetings.map((m) => m.meeting));
+    const hours = Array.from({ length: end - start }, (_, i) => start + i);
 
     return (
-        <div className="panel">
-            <h3>Weekly Timetable</h3>
-
-            <div className="timetable-wrapper">
-                <div className="timetable-inner">
-                    <div className="timetable-header">
-                        <div className="time-column-header" />
-                        {DAYS.map((day) => (
-                            <div key={day} className="day-header">
-                                {day}
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="timetable-body">
-                        <div className="time-column">
-                            {timeLabels.map((label) => (
-                                <div key={label} className="time-label" style={{ height: `${HOUR_HEIGHT}px` }}>
-                                    {label}
-                                </div>
-                            ))}
+        <div className="panel timetable-panel">
+            <div className="timetable">
+                <div className="timetable-head">
+                    <div />
+                    {DAYS.map((day) => (
+                        <div key={day} className="timetable-day">
+                            {day}
                         </div>
+                    ))}
+                </div>
 
-                        {DAYS.map((day) => (
-                            <div key={day} className="day-column">
-                                {timeLabels.map((_, index) => (
-                                    <div
-                                        key={`${day}-${index}`}
-                                        className="hour-slot"
-                                        style={{ height: `${HOUR_HEIGHT}px` }}
-                                    />
-                                ))}
-
-                                {flattenedMeetings
-                                    .filter(({ meeting }) => normalizeDay(meeting.day) === day)
-                                    .map(({ meeting, scheduledCourse }, index) => {
-                                        const style = getMeetingBlockStyle(meeting);
-                                        const colorClass = getCourseColor(scheduledCourse.course.code);
-
-                                        return (
-                                            <div
-                                                key={`${scheduledCourse.course.code}-${scheduledCourse.section.sectionId}-${index}`}
-                                                className={`meeting-block ${colorClass}`}
-                                                style={style}
-                                            >
-                                                <div className="meeting-course-code">{scheduledCourse.course.code}</div>
-                                                <div className="meeting-section">
-                                                    {meeting.startTime}–{meeting.endTime}
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
+                <div className="timetable-body">
+                    <div className="timetable-times">
+                        {hours.map((hour) => (
+                            <div key={hour} className="timetable-time" style={{ height: HOUR_HEIGHT }}>
+                                {formatHourLabel(hour)}
                             </div>
                         ))}
                     </div>
+
+                    {DAYS.map((day) => (
+                        <div
+                            key={day}
+                            className="timetable-column"
+                            style={{ height: hours.length * HOUR_HEIGHT }}
+                        >
+                            {meetings
+                                .filter(({ meeting }) => normalizeDay(meeting.day) === day)
+                                .map(({ meeting, scheduledCourse }, index) => (
+                                    <div
+                                        key={`${scheduledCourse.course.code}-${index}`}
+                                        className={`meeting-block ${colors.get(scheduledCourse.course.code)}`}
+                                        style={getMeetingBlockStyle(meeting, start)}
+                                        title={`${scheduledCourse.course.code} · ${formatTimeRange(meeting)}`}
+                                    >
+                                        <span className="meeting-code">{scheduledCourse.course.code}</span>
+                                        <span className="meeting-time">{formatTimeRange(meeting)}</span>
+                                    </div>
+                                ))}
+                        </div>
+                    ))}
                 </div>
             </div>
         </div>

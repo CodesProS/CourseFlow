@@ -5,6 +5,7 @@ import type { MultiValue } from "react-select";
 import type { SearchCriteria } from "../types";
 import type { TranscriptCourse } from "../transcript/parseTranscript";
 import { useCourses, useCoursesMeta } from "../api/hooks";
+import { formatCourseName } from "../utils/format";
 import TranscriptImport from "./TranscriptImport";
 
 type SearchFormProps = {
@@ -33,23 +34,35 @@ const fromOptions = (opts: MultiValue<Option>): string[] =>
 const normalizeCode = (input: string) => input.toUpperCase().replace(/\s+/g, "");
 
 // react-select styling — dark theme to match the app shell.
+// react-select styling — uses the theme tokens from index.css.
 const selectStyles = {
-    control: (base: Record<string, unknown>) => ({
+    control: (base: Record<string, unknown>, state: { isFocused: boolean }) => ({
         ...base,
-        background: "var(--surface-2, #1a1d24)",
-        borderColor: "var(--border, #2a2f3a)",
-        minHeight: 38,
+        background: "var(--surface-2)",
+        borderColor: state.isFocused ? "var(--accent)" : "var(--border)",
+        borderRadius: 10,
+        minHeight: 40,
+        boxShadow: state.isFocused ? "0 0 0 3px var(--accent-muted)" : "none",
+        "&:hover": { borderColor: state.isFocused ? "var(--accent)" : "var(--border-strong)" },
     }),
     menu: (base: Record<string, unknown>) => ({
         ...base,
-        background: "var(--surface-2, #1a1d24)",
+        background: "var(--surface-2)",
+        border: "1px solid var(--border-strong)",
+        borderRadius: 10,
+        overflow: "hidden",
         zIndex: 20,
     }),
     option: (base: Record<string, unknown>, state: { isFocused: boolean }) => ({
         ...base,
-        background: state.isFocused ? "var(--surface-3, #242933)" : "transparent",
-        color: "var(--text, #e6e6e6)",
+        background: state.isFocused ? "var(--surface-3)" : "transparent",
+        color: "var(--text)",
+        fontSize: "0.875rem",
     }),
+    indicatorSeparator: () => ({ display: "none" }),
+    dropdownIndicator: (base: Record<string, unknown>) => ({ ...base, color: "var(--text-faint)" }),
+    clearIndicator: (base: Record<string, unknown>) => ({ ...base, color: "var(--text-faint)" }),
+    noOptionsMessage: (base: Record<string, unknown>) => ({ ...base, color: "var(--text-faint)" }),
     valueContainer: (base: Record<string, unknown>) => ({
         ...base,
         maxHeight: 112,
@@ -57,18 +70,18 @@ const selectStyles = {
     }),
     multiValue: (base: Record<string, unknown>) => ({
         ...base,
-        background: "var(--accent-muted, #2d3748)",
+        background: "var(--accent-muted)",
         borderRadius: 6,
     }),
     multiValueLabel: (base: Record<string, unknown>) => ({
         ...base,
-        color: "var(--text, #e6e6e6)",
+        color: "var(--accent-text)",
         fontSize: "0.75rem",
         fontWeight: 600,
     }),
-    input: (base: Record<string, unknown>) => ({ ...base, color: "var(--text, #e6e6e6)" }),
-    singleValue: (base: Record<string, unknown>) => ({ ...base, color: "var(--text, #e6e6e6)" }),
-    placeholder: (base: Record<string, unknown>) => ({ ...base, color: "var(--text-muted, #7a8290)" }),
+    input: (base: Record<string, unknown>) => ({ ...base, color: "var(--text)" }),
+    singleValue: (base: Record<string, unknown>) => ({ ...base, color: "var(--text)" }),
+    placeholder: (base: Record<string, unknown>) => ({ ...base, color: "var(--text-faint)" }),
 };
 
 export default function SearchForm({ onGenerate, isSubmitting = false }: SearchFormProps) {
@@ -91,7 +104,7 @@ export default function SearchForm({ onGenerate, isSubmitting = false }: SearchF
         () =>
             (coursesQuery.data ?? []).map((c) => ({
                 value: c.code,
-                label: `${c.code} — ${c.name}`,
+                label: `${c.code} — ${formatCourseName(c.name)}`,
             })),
         [coursesQuery.data],
     );
@@ -132,7 +145,6 @@ export default function SearchForm({ onGenerate, isSubmitting = false }: SearchF
 
     return (
         <form className="search-form panel" onSubmit={handleSubmit}>
-            <h2>Planner Preferences</h2>
 
             {metaError && (
                 <p className="error-text">
@@ -140,8 +152,8 @@ export default function SearchForm({ onGenerate, isSubmitting = false }: SearchF
                 </p>
             )}
 
+            <h3 className="form-section">Courses you&apos;ve taken</h3>
             <div className="field">
-                <span>Completed Courses</span>
                 <TranscriptImport onApply={handleTranscript} />
                 <CreatableSelect
                     isMulti
@@ -171,8 +183,9 @@ export default function SearchForm({ onGenerate, isSubmitting = false }: SearchF
                 />
             </div>
 
+            <h3 className="form-section">What you&apos;re looking for</h3>
             <label className="field">
-                <span>Interests (free text)</span>
+                <span>Interests</span>
                 <input
                     type="text"
                     placeholder="AI, systems, databases"
@@ -182,7 +195,7 @@ export default function SearchForm({ onGenerate, isSubmitting = false }: SearchF
             </label>
 
             <label className="field">
-                <span>Preferred Tags</span>
+                <span>Preferred tags</span>
                 <Select
                     isMulti
                     options={tagOptions}
@@ -196,7 +209,7 @@ export default function SearchForm({ onGenerate, isSubmitting = false }: SearchF
             </label>
 
             <label className="field">
-                <span>Needed Breadth</span>
+                <span>Breadth still needed</span>
                 <Select
                     isMulti
                     options={breadthOptions}
@@ -210,7 +223,7 @@ export default function SearchForm({ onGenerate, isSubmitting = false }: SearchF
             </label>
 
             <label className="field">
-                <span>Needed GenEd</span>
+                <span>Gen-ed still needed</span>
                 <Select
                     isMulti
                     options={genEdOptions}
@@ -223,13 +236,14 @@ export default function SearchForm({ onGenerate, isSubmitting = false }: SearchF
                 />
             </label>
 
+            <h3 className="form-section">Course load</h3>
             <div className="form-row">
                 <label className="field">
-                    <span>Max Difficulty</span>
+                    <span>Max difficulty</span>
                     <input
                         type="number"
                         min="1"
-                        max="5"
+                        max="3"
                         value={maxDifficulty}
                         onChange={(e) =>
                             setMaxDifficulty(e.target.value === "" ? "" : Number(e.target.value))
@@ -238,7 +252,7 @@ export default function SearchForm({ onGenerate, isSubmitting = false }: SearchF
                 </label>
 
                 <label className="field">
-                    <span>Min Credits</span>
+                    <span>Min credits</span>
                     <input
                         type="number"
                         min="0"
@@ -250,7 +264,7 @@ export default function SearchForm({ onGenerate, isSubmitting = false }: SearchF
                 </label>
 
                 <label className="field">
-                    <span>Max Credits</span>
+                    <span>Max credits</span>
                     <input
                         type="number"
                         min="0"
@@ -262,9 +276,11 @@ export default function SearchForm({ onGenerate, isSubmitting = false }: SearchF
                 </label>
             </div>
 
-            <button type="submit" className="primary-btn" disabled={isSubmitting}>
-                {isSubmitting ? "Generating…" : "Generate Schedules"}
-            </button>
+            <div className="form-footer">
+                <button type="submit" className="primary-btn" disabled={isSubmitting}>
+                    {isSubmitting ? "Generating…" : "Generate schedules"}
+                </button>
+            </div>
         </form>
     );
 }

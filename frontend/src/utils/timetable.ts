@@ -15,9 +15,11 @@ export const DAY_LABEL_MAP: Record<string, string> = {
     Fri: "Fri",
 };
 
-export const GRID_START_HOUR = 8;
-export const GRID_END_HOUR = 20; // 8 PM
-export const HOUR_HEIGHT = 52; // pixels per hour
+export const HOUR_HEIGHT = 48; // pixels per hour
+
+// Show at least 8 AM–6 PM, stretched to fit any earlier or later meetings.
+const MIN_START_HOUR = 8;
+const MIN_END_HOUR = 18;
 
 export function parseTimeToMinutes(time: string): number {
     const [hours, minutes] = time.split(":").map(Number);
@@ -27,26 +29,51 @@ export function parseTimeToMinutes(time: string): number {
 export function formatHourLabel(hour: number): string {
     const suffix = hour >= 12 ? "PM" : "AM";
     const normalized = hour % 12 === 0 ? 12 : hour % 12;
-    return `${normalized}:00 ${suffix}`;
+    return `${normalized} ${suffix}`;
 }
 
-export function getTimeLabels(): string[] {
-    const labels: string[] = [];
-    for (let hour = GRID_START_HOUR; hour <= GRID_END_HOUR; hour++) {
-        labels.push(formatHourLabel(hour));
+export function getHourRange(meetings: MeetingTime[]): { start: number; end: number } {
+    let start = MIN_START_HOUR;
+    let end = MIN_END_HOUR;
+    for (const m of meetings) {
+        start = Math.min(start, Math.floor(parseTimeToMinutes(m.startTime) / 60));
+        end = Math.max(end, Math.ceil(parseTimeToMinutes(m.endTime) / 60));
     }
-    return labels;
+    return { start, end };
+}
+
+// "11:00" -> "11:00", "13:20" -> "1:20"
+function formatClock(time: string): string {
+    const [h, m] = time.split(":").map(Number);
+    return `${h % 12 === 0 ? 12 : h % 12}:${String(m).padStart(2, "0")}`;
+}
+
+export function formatTimeRange(meeting: MeetingTime): string {
+    return `${formatClock(meeting.startTime)}–${formatClock(meeting.endTime)}`;
+}
+
+// Groups days that share a time: "Mon Wed 11:00–12:30 · Fri 9:55–10:45".
+export function formatMeetings(meetings: MeetingTime[]): string {
+    const byTime = new Map<string, string[]>();
+    const sorted = [...meetings].sort(
+        (a, b) => DAYS.indexOf(normalizeDay(a.day)) - DAYS.indexOf(normalizeDay(b.day)),
+    );
+    for (const m of sorted) {
+        const key = formatTimeRange(m);
+        byTime.set(key, [...(byTime.get(key) ?? []), normalizeDay(m.day)]);
+    }
+    return [...byTime].map(([time, days]) => `${days.join(" ")} ${time}`).join(" · ");
 }
 
 export function normalizeDay(day: string): string {
     return DAY_LABEL_MAP[day] ?? day;
 }
 
-export function getMeetingBlockStyle(meeting: MeetingTime) {
+export function getMeetingBlockStyle(meeting: MeetingTime, startHour: number) {
     const startMinutes = parseTimeToMinutes(meeting.startTime);
     const endMinutes = parseTimeToMinutes(meeting.endTime);
 
-    const gridStartMinutes = GRID_START_HOUR * 60;
+    const gridStartMinutes = startHour * 60;
     const top = ((startMinutes - gridStartMinutes) / 60) * HOUR_HEIGHT;
     const height = ((endMinutes - startMinutes) / 60) * HOUR_HEIGHT;
 
@@ -56,22 +83,14 @@ export function getMeetingBlockStyle(meeting: MeetingTime) {
     };
 }
 
-export function getCourseColor(courseCode: string): string {
-    const palette = [
-        "course-color-1",
-        "course-color-2",
-        "course-color-3",
-        "course-color-4",
-        "course-color-5",
-        "course-color-6",
-    ];
+const COURSE_COLORS = 8;
 
-    let hash = 0;
-    for (let i = 0; i < courseCode.length; i++) {
-        hash += courseCode.charCodeAt(i);
-    }
-
-    return palette[hash % palette.length];
+// Color by position in the schedule so every course in it gets a distinct
+// color (a hash of the code can collide). Returns code -> CSS class.
+export function getCourseColors(courses: ScheduledCourse[]): Map<string, string> {
+    return new Map(
+        courses.map(({ course }, i) => [course.code, `course-color-${(i % COURSE_COLORS) + 1}`]),
+    );
 }
 
 export function flattenScheduleMeetings(scheduledCourses: ScheduledCourse[]) {
