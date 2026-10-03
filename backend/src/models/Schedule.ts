@@ -2,7 +2,7 @@ import { Course, Section } from "./Course";
 
 export type ScheduledCourse = {
     course: Course;
-    section: Section;
+    section: Section | null; // null: the course has no listed meeting times
 };
 
 export type Schedule = {

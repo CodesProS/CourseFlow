@@ -5,21 +5,21 @@
  * Usage:
  *   UW_COURSEMAP_DATA=/path/to/uw-coursemap-data npm run ingest
  *
- * Only courses that have live meetings.json are kept — without timings
- * we can't schedule them. Lectures only for now; lab/discussion coupling
- * is out of scope.
+ * Only course/*.json and course/<COURSE>/meetings.json are read, so a
+ * sparse checkout of those paths is enough (see data/README.md).
+ *
+ * Keeps undergraduate courses that are still being taught. Courses without
+ * meetings.json are kept with no sections: the planner can still suggest
+ * them, it just can't place them on the timetable. Lectures only for now;
+ * lab/discussion coupling is out of scope.
  */
 
 import * as fs from "fs";
 import * as path from "path";
-import type { Course, Section, MeetingTime } from "../models/Course";
-
-// Subjects to include. These all have meetings.json in the source and
-// give us a decent STEM + humanities mix.
-const TARGET_SUBJECTS = ["COMPSCI", "MATH", "PHYSICS", "ENGL", "HISTORY", "KINES"];
+import type { Course, Section, MeetingTime, PrereqNode } from "../models/Course";
 
 // uw-coursemap-data doesn't expose UW's real breadth codes, so fake it
-// from the subject. Good enough for the catalog we're building.
+// from the subject for the handful we've mapped.
 const BREADTH_BY_SUBJECT: Record<string, string> = {
     COMPSCI: "Natural Science",
     MATH: "Natural Science",
@@ -29,11 +29,23 @@ const BREADTH_BY_SUBJECT: Record<string, string> = {
     KINES: "Biological Science",
 };
 
+// 700+ are graduate-only.
+const MAX_COURSE_NUMBER = 699;
+
+// UW term codes: 1 + two-digit year + season digit (2 Fall, 4 Spring, 6 Summer).
+// Untimed courses must have been taught in or after this term to be kept;
+// older ones are most likely retired.
+const ACTIVE_SINCE_TERM = 1232; // Fall 2022
+
+// Most UW courses are 3 credits; used when the source has no credit count.
+const DEFAULT_CREDITS = 3;
+
 const UW_DATA_ROOT =
     process.env.UW_COURSEMAP_DATA ??
     path.resolve(__dirname, "../../../../uw-coursemap-data");
 
 const OUTPUT_PATH = path.resolve(__dirname, "../../data/courses.json");
+const SUBJECTS_OUTPUT_PATH = path.resolve(__dirname, "../../data/subjects.json");
 
 // --- external shapes (subset of what uw-coursemap-data publishes) ---
 
@@ -60,12 +72,25 @@ interface RawTermData {
     grade_data: RawGradeData | null;
 }
 
+// Prerequisite syntax tree. Leaves are course references, bare course
+// numbers ("367", meaning the same subject as the preceding reference), or
+// free text ("graduate/professional standing").
+type RawPrereqNode =
+    | RawCourseReference
+    | string
+    | { operator: "AND" | "OR"; children: RawPrereqNode[] };
+
+interface RawPrerequisites {
+    abstract_syntax_tree: RawPrereqNode | null;
+    linked_requisite_text?: Array<string | RawCourseReference>;
+}
+
 interface RawCourse {
     course_reference: RawCourseReference;
     course_title: string;
-    description: string;
+    description?: string;
     keywords: string[];
-    optimized_prerequisites: RawCourseReference[] | null;
+    prerequisites: RawPrerequisites | null;
     cumulative_grade_data?: RawGradeData | null;
     term_data?: Record<string, RawTermData>;
 }
@@ -125,22 +150,106 @@ function difficultyFromNumber(n: number): number {
     return 3;
 }
 
+// --- prerequisites ---
+
+// Non-course conditions an undergrad using the planner can be assumed to
+// meet. We can't verify class standing, so we don't block on it.
+const MET_CONDITIONS = [
+    /^none$/,
+    /\b(freshman|sophomore|junior|senior) standing\b/,
+    /\bcommunications? a\b/,
+    /\bquantitative reasoning\b/,
+    /^qr$/,
+    /^a requirement$/,
+];
+
+// Everything else (graduate standing, consent of instructor, declared in a
+// program, placement tests, ...) is treated as unmet. Inside an OR the
+// course-based route still works.
+function conditionMet(text: string): boolean {
+    const t = text.trim().toLowerCase().replace(/\s+/g, " ");
+    return MET_CONDITIONS.some((re) => re.test(t));
+}
+
+function isReference(node: RawPrereqNode): node is RawCourseReference {
+    return typeof node === "object" && "course_number" in node;
+}
+
+// Resolves leaves and constant-folds booleans, so "X or graduate standing"
+// becomes just "X" and a requirement that's always met becomes `true`.
+function buildPrereqTree(node: RawPrereqNode, lastSubject: string | null): PrereqNode {
+    if (isReference(node)) return refToCode(node);
+
+    if (typeof node === "string") {
+        const text = node.trim();
+        // "367" after "COMPSCI 320" means COMPSCI 367.
+        if (/^\d{2,3}$/.test(text)) {
+            return lastSubject ? `${lastSubject}${text}` : false;
+        }
+        // A course written out as text: "COMP SCI 367", "M E 240".
+        const written = /^([A-Za-z][A-Za-z &]*?)\s+(\d{2,3})$/.exec(text);
+        if (written) return `${written[1].toUpperCase().replace(/\s+/g, "")}${written[2]}`;
+        return conditionMet(text);
+    }
+
+    const op = node.operator === "AND" ? "and" : "or";
+    const children: PrereqNode[] = [];
+    let subject = lastSubject;
+    for (const child of node.children) {
+        if (isReference(child)) subject = child.subjects[0];
+        const built = buildPrereqTree(child, subject);
+        if (typeof built === "boolean") {
+            if (op === "and" && !built) return false; // AND with an unmet part
+            if (op === "or" && built) return true; // OR with a met part
+            continue; // drop the neutral element
+        }
+        children.push(built);
+    }
+
+    if (children.length === 0) return op === "and"; // all parts were neutral
+    if (children.length === 1) return children[0];
+    return { op, children };
+}
+
+function collectCodes(node: PrereqNode, out: Set<string>): Set<string> {
+    if (typeof node === "string") out.add(node);
+    else if (typeof node === "object") node.children.forEach((c) => collectCodes(c, out));
+    return out;
+}
+
+// "(COMPSCI 300, 320 or 367) and (MATH 211, ...)" from the linked text.
+function prerequisiteText(raw: RawPrerequisites): string | undefined {
+    const parts = raw.linked_requisite_text;
+    if (!parts?.length) return undefined;
+    const text = parts
+        .map((p) => (typeof p === "string" ? p : `${p.subjects[0]} ${p.course_number}`))
+        .join("")
+        .replace(/\s+/g, " ")
+        .trim();
+    return text && text.toLowerCase() !== "none" ? text : undefined;
+}
+
 // --- transform ---
 
 function summarizeTerms(raw: RawCourse): {
-    credits: number;
+    credits: number | null;
     genEd: string[];
     avgGpa: number | null;
+    lastTaughtTerm: number;
 } {
     // Grab most recent enrollment snapshot for credits + gen-ed flags.
     let latestEnrollment: RawEnrollmentData | null = null;
-    let latestTerm = -Infinity;
+    let latestEnrollmentTerm = -Infinity;
+    let lastTaughtTerm = 0;
 
     for (const [key, value] of Object.entries(raw.term_data ?? {})) {
         if (!/^\d+$/.test(key)) continue;
         const termNum = Number(key);
-        if (value.enrollment_data && termNum > latestTerm) {
-            latestTerm = termNum;
+        if (value.enrollment_data || value.grade_data) {
+            lastTaughtTerm = Math.max(lastTaughtTerm, termNum);
+        }
+        if (value.enrollment_data && termNum > latestEnrollmentTerm) {
+            latestEnrollmentTerm = termNum;
             latestEnrollment = value.enrollment_data;
         }
     }
@@ -150,12 +259,12 @@ function summarizeTerms(raw: RawCourse): {
         ? averageGpa(raw.cumulative_grade_data)
         : null;
 
-    const credits = latestEnrollment?.credit_count?.[1] ?? 3;
+    const credits = latestEnrollment?.credit_count?.[1] ?? null;
     const genEd: string[] = [];
     if (latestEnrollment?.general_education) genEd.push("GenEd");
     if (latestEnrollment?.ethnics_studies) genEd.push("Ethnic Studies");
 
-    return { credits, genEd, avgGpa };
+    return { credits, genEd, avgGpa, lastTaughtTerm };
 }
 
 // meetings.json lists individual sessions on specific dates. We need
@@ -201,38 +310,47 @@ function buildSections(meetings: RawMeeting[]): Section[] {
     return sections;
 }
 
-function buildCourse(raw: RawCourse, rawMeetings: RawMeeting[]): Course | null {
+function buildCourse(raw: RawCourse, rawMeetings: RawMeeting[] | null): Course | null {
     const ref = raw.course_reference;
-    if (!TARGET_SUBJECTS.some((s) => ref.subjects.includes(s))) return null;
+    if (ref.course_number > MAX_COURSE_NUMBER) return null;
 
-    const sections = buildSections(rawMeetings);
-    if (sections.length === 0) return null;
+    const sections = rawMeetings ? buildSections(rawMeetings) : [];
+    const { credits, genEd, avgGpa, lastTaughtTerm } = summarizeTerms(raw);
 
-    const { credits, genEd, avgGpa } = summarizeTerms(raw);
-    const primarySubject = ref.subjects[0];
+    // A course with live sections is clearly offered; otherwise require
+    // recent teaching history so retired courses don't get suggested.
+    if (sections.length === 0 && lastTaughtTerm < ACTIVE_SINCE_TERM) return null;
+
+    const ast = raw.prerequisites?.abstract_syntax_tree;
+    const tree = ast ? buildPrereqTree(ast, null) : true;
+
+    const aliases = ref.subjects.slice(1).map((s) => `${s}${ref.course_number}`);
 
     const course: Course = {
         code: refToCode(ref),
+        aliases: aliases.length ? aliases : undefined,
         name: raw.course_title,
-        credits,
+        credits: credits ?? DEFAULT_CREDITS,
         difficulty: difficultyFromNumber(ref.course_number),
         tags: [...(raw.keywords ?? [])],
-        breadth: BREADTH_BY_SUBJECT[primarySubject],
+        breadth: BREADTH_BY_SUBJECT[ref.subjects[0]],
         genEd: genEd.length ? genEd : undefined,
         creditType: "L&S",
-        prerequisites: (raw.optimized_prerequisites ?? []).map(refToCode),
+        prerequisites: [...collectCodes(tree, new Set())],
+        prerequisiteTree: tree === true ? undefined : tree,
+        prerequisiteText: raw.prerequisites ? prerequisiteText(raw.prerequisites) : undefined,
         sections,
+        description: raw.description?.trim() || undefined,
+        avgGpa: avgGpa ?? undefined,
+        creditsEstimated: credits === null ? true : undefined,
     };
-
-    // TODO: add avgGpa to the Course type proper instead of tacking it on here.
-    (course as Course & { avgGpa?: number | null }).avgGpa = avgGpa;
 
     return course;
 }
 
 // --- extract + load ---
 
-function loadRawCourses(): Array<{ course: RawCourse; meetings: RawMeeting[] }> {
+function loadRawCourses(): Array<{ course: RawCourse; meetings: RawMeeting[] | null }> {
     const courseDir = path.join(UW_DATA_ROOT, "course");
     if (!fs.existsSync(courseDir)) {
         throw new Error(
@@ -240,22 +358,20 @@ function loadRawCourses(): Array<{ course: RawCourse; meetings: RawMeeting[] }> 
         );
     }
 
-    const results: Array<{ course: RawCourse; meetings: RawMeeting[] }> = [];
+    const results: Array<{ course: RawCourse; meetings: RawMeeting[] | null }> = [];
 
     for (const entry of fs.readdirSync(courseDir)) {
         if (!entry.endsWith(".json")) continue;
-        if (!TARGET_SUBJECTS.some((s) => entry.startsWith(`${s}_`))) continue;
 
         const stem = entry.replace(/\.json$/, "");
         const meetingsPath = path.join(courseDir, stem, "meetings.json");
-        if (!fs.existsSync(meetingsPath)) continue;
 
         const course = JSON.parse(
             fs.readFileSync(path.join(courseDir, entry), "utf8"),
         ) as RawCourse;
-        const meetings = JSON.parse(
-            fs.readFileSync(meetingsPath, "utf8"),
-        ) as RawMeeting[];
+        const meetings = fs.existsSync(meetingsPath)
+            ? (JSON.parse(fs.readFileSync(meetingsPath, "utf8")) as RawMeeting[])
+            : null;
 
         results.push({ course, meetings });
     }
@@ -263,15 +379,31 @@ function loadRawCourses(): Array<{ course: RawCourse; meetings: RawMeeting[] }> 
     return results;
 }
 
+// Subject code -> department name ("COMPSCI" -> "Computer Sciences"), used
+// to match a student's major to its courses.
+function writeSubjectsJson(): void {
+    const source = path.join(UW_DATA_ROOT, "subjects.json");
+    if (!fs.existsSync(source)) {
+        console.warn(`  No subjects.json at ${source}; skipping subject names.`);
+        return;
+    }
+    const subjects = JSON.parse(fs.readFileSync(source, "utf8")) as Record<string, string>;
+    const sorted = Object.fromEntries(Object.entries(subjects).sort(([a], [b]) => a.localeCompare(b)));
+    fs.writeFileSync(SUBJECTS_OUTPUT_PATH, JSON.stringify(sorted, null, 2) + "\n");
+    console.log(`Wrote ${Object.keys(sorted).length} subjects to ${SUBJECTS_OUTPUT_PATH}`);
+}
+
+// One course per line: compact for a ~5k-course catalog, but still diffable.
 function writeCoursesJson(courses: Course[]): void {
     fs.mkdirSync(path.dirname(OUTPUT_PATH), { recursive: true });
-    fs.writeFileSync(OUTPUT_PATH, JSON.stringify(courses, null, 2) + "\n");
+    const lines = courses.map((c) => JSON.stringify(c));
+    fs.writeFileSync(OUTPUT_PATH, `[\n${lines.join(",\n")}\n]\n`);
 }
 
 function main(): void {
     console.log(`Reading uw-coursemap-data from: ${UW_DATA_ROOT}`);
     const raws = loadRawCourses();
-    console.log(`  Found ${raws.length} candidate courses with meetings data`);
+    console.log(`  Found ${raws.length} courses`);
 
     const courses: Course[] = [];
     for (const { course: raw, meetings } of raws) {
@@ -282,8 +414,14 @@ function main(): void {
     // Keep output sorted so diffs are stable.
     courses.sort((a, b) => a.code.localeCompare(b.code));
 
+    const timed = courses.filter((c) => c.sections.length > 0).length;
+    const estimated = courses.filter((c) => c.creditsEstimated).length;
     writeCoursesJson(courses);
-    console.log(`Wrote ${courses.length} courses to ${OUTPUT_PATH}`);
+    writeSubjectsJson();
+    console.log(
+        `Wrote ${courses.length} courses (${timed} with meeting times, ` +
+            `${estimated} with estimated credits) to ${OUTPUT_PATH}`,
+    );
 }
 
 main();

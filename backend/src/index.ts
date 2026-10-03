@@ -1,52 +1,45 @@
+// CLI demo: runs the planning pipeline once and prints the results.
+//   npm run dev:cli
 import { courses } from "./data/courses";
 import { SearchCriteria } from "./models/SearchCriteria";
-import { getAvailableCourses } from "./services/coursePlanner";
-import { rankCourses, scoreCourse } from "./services/scoringService";
+import { selectCandidates } from "./services/coursePlanner";
+import { scoreCourse } from "./services/scoringService";
 import { generateSchedules } from "./services/scheduleService";
 
-const completedCourses = new Set<string>(["CS200", "MATH221"]);
+const completedCourses = new Set<string>(["COMPSCI200", "COMPSCI300", "MATH221"]);
 
 const criteria: SearchCriteria = {
     neededBreadth: ["Humanities"],
     neededGenEd: ["Ethnic Studies"],
     interests: ["AI", "Systems"],
-    maxDifficulty: 2,
+    maxDifficulty: 3,
     targetCreditsMin: 12,
     targetCreditsMax: 15,
 };
 
-const availableCourses = getAvailableCourses(courses, completedCourses);
+const candidates = selectCandidates(courses, completedCourses, criteria);
 
-console.log("Available courses:");
-for (const course of availableCourses) {
-    console.log(
-        `${course.code} - ${course.name} | score: ${scoreCourse(course, criteria)}`
-    );
+console.log(`Top ${candidates.length} candidate courses:`);
+for (const course of candidates) {
+    const time = course.sections.length > 0 ? "" : " (time not listed)";
+    console.log(`${course.code} - ${course.name} | score: ${scoreCourse(course, criteria)}${time}`);
 }
 
-const rankedCourses = rankCourses(availableCourses, criteria);
+const schedules = generateSchedules(candidates, criteria, 5);
 
-console.log("\nRanked courses:");
-for (const course of rankedCourses) {
-    console.log(
-        `${course.code} - ${course.name} | score: ${scoreCourse(course, criteria)}`
-    );
-}
-
-const schedules = generateSchedules(rankedCourses, criteria);
-
-console.log(`\nGenerated ${schedules.length} valid schedules:\n`);
+console.log(`\nTop ${schedules.length} schedules:\n`);
 
 schedules.forEach((schedule, index) => {
     console.log(`================ Schedule ${index + 1} ================`);
     console.log(`Total Credits: ${schedule.totalCredits} | Score: ${schedule.score}`);
 
-    for (const scheduledCourse of schedule.courses) {
-        console.log(
-            `${scheduledCourse.course.code} - ${scheduledCourse.course.name} | Section ${scheduledCourse.section.sectionId}`
-        );
-
-        for (const meeting of scheduledCourse.section.meetings) {
+    for (const { course, section } of schedule.courses) {
+        if (!section) {
+            console.log(`${course.code} - ${course.name} | time not listed`);
+            continue;
+        }
+        console.log(`${course.code} - ${course.name} | Section ${section.sectionId}`);
+        for (const meeting of section.meetings) {
             console.log(`  ${meeting.day} ${meeting.startTime}-${meeting.endTime}`);
         }
     }

@@ -16,7 +16,10 @@ export class InMemoryCourseRepository implements CourseRepository {
 
     constructor(courses: Course[]) {
         this.courses = courses;
-        this.byCode = new Map(courses.map((c) => [c.code, c]));
+        // Cross-listed courses are findable by any of their codes.
+        this.byCode = new Map(
+            courses.flatMap((c) => [c.code, ...(c.aliases ?? [])].map((code) => [code, c] as const)),
+        );
     }
 
     listAll(): Course[] {

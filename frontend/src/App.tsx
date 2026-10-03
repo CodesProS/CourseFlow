@@ -1,10 +1,11 @@
 import { useState } from "react";
-import type { SearchCriteria } from "./types";
+import type { ScheduledCourse, SearchCriteria } from "./types";
 
 import SearchForm from "./components/SearchForm";
 import ResultsHeader from "./components/ResultsHeader";
 import ScheduleList from "./components/ScheduleList";
 import ScheduleGrid from "./components/ScheduleGrid";
+import CourseDetails from "./components/CourseDetails";
 import { usePlanMutation } from "./api/hooks";
 import "./App.css";
 
@@ -42,9 +43,15 @@ function StatusPanel({ title, message, tone }: { title: string; message: string;
 
 export default function App() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [selectedCourse, setSelectedCourse] = useState<ScheduledCourse | null>(null);
   const planMutation = usePlanMutation();
   const schedules = planMutation.data?.schedules;
   const currentSchedule = schedules?.[currentIndex] ?? null;
+
+  // When most of a schedule's courses have no listed times, the calendar
+  // shows little; lead with the course list instead.
+  const timedCount = currentSchedule?.courses.filter((c) => c.section).length ?? 0;
+  const listFirst = currentSchedule !== null && timedCount * 2 < currentSchedule.courses.length;
 
   const handleGenerate = (payload: { completedCourses: string[]; criteria: SearchCriteria }) => {
     setCurrentIndex(0);
@@ -81,8 +88,17 @@ export default function App() {
           onPrevious={() => setCurrentIndex((i) => Math.max(i - 1, 0))}
           onNext={() => setCurrentIndex((i) => Math.min(i + 1, schedules.length - 1))}
         />
-        <ScheduleGrid schedule={currentSchedule} />
-        <ScheduleList schedule={currentSchedule} />
+        {listFirst ? (
+          <>
+            <ScheduleList schedule={currentSchedule} onSelectCourse={setSelectedCourse} />
+            <ScheduleGrid schedule={currentSchedule} onSelectCourse={setSelectedCourse} showUntimed={false} />
+          </>
+        ) : (
+          <>
+            <ScheduleGrid schedule={currentSchedule} onSelectCourse={setSelectedCourse} />
+            <ScheduleList schedule={currentSchedule} onSelectCourse={setSelectedCourse} />
+          </>
+        )}
       </>
     );
   }
@@ -103,6 +119,8 @@ export default function App() {
         </aside>
         <section className="results">{results}</section>
       </main>
+
+      <CourseDetails scheduledCourse={selectedCourse} onClose={() => setSelectedCourse(null)} />
     </div>
   );
 }

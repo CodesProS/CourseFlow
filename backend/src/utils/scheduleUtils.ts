@@ -31,12 +31,14 @@ export function sectionsConflict(sectionA: Section, sectionB: Section): boolean 
     return false;
 }
 
+// A null section (no listed meeting times) never conflicts.
 export function canAddSection(
     currentScheduledCourses: ScheduledCourse[],
-    newSection: Section
+    newSection: Section | null
 ): boolean {
+    if (!newSection) return true;
     for (const scheduledCourse of currentScheduledCourses) {
-        if (sectionsConflict(scheduledCourse.section, newSection)) {
+        if (scheduledCourse.section && sectionsConflict(scheduledCourse.section, newSection)) {
             return false;
         }
     }

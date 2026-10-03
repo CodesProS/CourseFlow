@@ -15,6 +15,7 @@ export type Section = {
 
 export type Course = {
     code: string;
+    aliases?: string[]; // other codes for a cross-listed course
     name: string;
     credits: number;
     difficulty: number;
@@ -23,14 +24,20 @@ export type Course = {
     genEd?: string[];
     creditType?: string;
     prerequisites: string[];
-    sections: Section[];
-    // Added by the ingest step. Optional because not every course has grade history.
+    prerequisiteText?: string; // the rule as UW words it
+    sections: Section[]; // empty when meeting times aren't listed
+    // Added by the ingest step. Optional because not every course has them.
+    description?: string;
     avgGpa?: number;
+    creditsEstimated?: boolean; // source had no credit count; 3 assumed
 };
+
+// Response item of GET /courses — just enough for the course picker.
+export type CourseSummary = Pick<Course, "code" | "name" | "aliases">;
 
 export type ScheduledCourse = {
     course: Course;
-    section: Section;
+    section: Section | null; // null when the course has no listed times
 };
 
 export type Schedule = {
@@ -40,6 +47,7 @@ export type Schedule = {
 };
 
 export type SearchCriteria = {
+    major?: string;
     interests?: string[];
     neededBreadth?: string[];
     neededGenEd?: string[];

@@ -30,6 +30,8 @@ const toOptions = (values: string[]): Option[] =>
 const fromOptions = (opts: MultiValue<Option>): string[] =>
     opts.map((o) => o.value);
 
+const MAX_COURSE_MATCHES = 50;
+
 // Catalog codes have no spaces: "COMP SCI 300" -> "COMPSCI300".
 const normalizeCode = (input: string) => input.toUpperCase().replace(/\s+/g, "");
 
@@ -112,10 +114,33 @@ export default function SearchForm({ onGenerate, isSubmitting = false }: SearchF
         [coursesQuery.data],
     );
 
-    const courseLabels = useMemo(
-        () => new Map(courseOptions.map((o) => [o.value, o.label])),
-        [courseOptions],
-    );
+    // Cross-listed courses get a label under each of their codes, so a
+    // transcript's "ECE354" shows the COMPSCI354 title.
+    const courseLabels = useMemo(() => {
+        const labels = new Map<string, string>();
+        for (const c of coursesQuery.data ?? []) {
+            for (const code of [c.code, ...(c.aliases ?? [])]) {
+                labels.set(code, `${code} — ${formatCourseName(c.name)}`);
+            }
+        }
+        return labels;
+    }, [coursesQuery.data]);
+
+    // The catalog has thousands of courses; rendering them all in the menu
+    // freezes it. Search after two characters and show the first matches.
+    const [courseQuery, setCourseQuery] = useState("");
+    const matchingCourseOptions = useMemo(() => {
+        const query = normalizeCode(courseQuery);
+        if (query.length < 2) return [];
+        const words = courseQuery.toLowerCase().split(/\s+/).filter(Boolean);
+        return courseOptions
+            .filter(
+                (o) =>
+                    o.value.startsWith(query) ||
+                    words.every((w) => o.label.toLowerCase().includes(w)),
+            )
+            .slice(0, MAX_COURSE_MATCHES);
+    }, [courseOptions, courseQuery]);
 
     const handleTranscript = (courses: TranscriptCourse[], transcriptMajor: string | null) => {
         const imported = courses.map((c) => ({
@@ -147,6 +172,7 @@ export default function SearchForm({ onGenerate, isSubmitting = false }: SearchF
         e.preventDefault();
 
         const criteria: SearchCriteria = {
+            major: major.trim() || undefined,
             interests: splitCommaSeparated(interestsInput),
             preferredTags: fromOptions(preferredTags),
             neededBreadth: fromOptions(neededBreadth),
@@ -195,7 +221,18 @@ export default function SearchForm({ onGenerate, isSubmitting = false }: SearchF
                 <span>Completed courses</span>
                 <CreatableSelect
                     isMulti
-                    options={courseOptions}
+                    options={matchingCourseOptions}
+                    // Already filtered above; react-select's own filter would
+                    // re-scan every option on each keystroke.
+                    filterOption={null}
+                    inputValue={courseQuery}
+                    onInputChange={(value, { action }) => {
+                        if (action === "input-change") setCourseQuery(value);
+                        if (action === "menu-close" || action === "set-value") setCourseQuery("");
+                    }}
+                    noOptionsMessage={() =>
+                        courseQuery.trim().length < 2 ? "Type a course code or name" : "No matching courses"
+                    }
                     value={completedCourses}
                     onChange={(v) => setCompletedCourses([...v])}
                     // Prereqs like MATH221 aren't in the catalog, so allow any code.

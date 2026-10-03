@@ -389,12 +389,22 @@
   right: 4px;
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 1px;
   padding: 5px 8px;
+  border: none;
   border-radius: 8px;
   border-left: 3px solid var(--course);
   background: color-mix(in srgb, var(--course) 22%, var(--surface));
+  color: inherit;
+  text-align: left;
   overflow: hidden;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.meeting-block:hover {
+  background: color-mix(in srgb, var(--course) 34%, var(--surface));
 }
 
 .meeting-code {
@@ -419,16 +429,37 @@
   padding: 0;
 }
 
-.course-list li {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 14px;
-  padding: 12px 4px;
-}
-
 .course-list li + li {
   border-top: 1px solid var(--border);
+}
+
+.course-row {
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 8px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.course-row:hover {
+  background: var(--surface-2);
+}
+
+.course-chevron {
+  color: var(--text-faint);
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.course-row:hover .course-chevron {
+  color: var(--text-muted);
 }
 
 .course-dot {
@@ -439,7 +470,12 @@
 }
 
 .course-main {
+  display: block;
   min-width: 0;
+}
+
+.course-sub {
+  display: block;
 }
 
 .course-line {
@@ -600,7 +636,8 @@
   font-weight: 500;
 }
 
-/* Review dialog */
+/* Dialogs */
+.modal,
 .transcript-dialog {
   width: min(720px, calc(100vw - 32px));
   max-height: min(820px, calc(100vh - 48px));
@@ -613,6 +650,7 @@
   overflow: hidden;
 }
 
+.modal::backdrop,
 .transcript-dialog::backdrop {
   background: rgba(3, 7, 18, 0.7);
   backdrop-filter: blur(3px);
@@ -843,4 +881,141 @@
   .transcript-course-title {
     display: none;
   }
+}
+
+/* Course details dialog */
+.course-dialog {
+  width: min(560px, calc(100vw - 32px));
+}
+
+.course-details {
+  padding: 22px 24px 26px;
+  max-height: inherit;
+  overflow-y: auto;
+  text-align: left;
+}
+
+.course-details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.course-details-code {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--accent-text);
+}
+
+.course-details-header h3 {
+  margin-top: 2px;
+  font-size: 1.3rem;
+}
+
+.course-details-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 14px 0 6px;
+}
+
+.course-details-tags span {
+  font-size: 0.75rem;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+}
+
+.course-details section {
+  margin-top: 18px;
+}
+
+.course-details h4 {
+  margin-bottom: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-faint);
+}
+
+.course-details p {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--text);
+}
+
+.course-details p.muted {
+  color: var(--text-faint);
+}
+
+.course-details-prereqs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.course-details-prereqs li {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: var(--accent-muted);
+  color: var(--accent-text);
+}
+
+/* Courses without listed meeting times */
+.untimed-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  margin: 12px 0 0 56px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border-strong);
+}
+
+.untimed-strip.only {
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.untimed-strip-label {
+  font-size: 0.75rem;
+  color: var(--text-faint);
+}
+
+.untimed-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.untimed-chip {
+  padding: 4px 10px;
+  border: 1px dashed var(--course);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--course) 12%, var(--surface));
+  color: var(--text-strong);
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.untimed-chip:hover {
+  background: color-mix(in srgb, var(--course) 24%, var(--surface));
+}
+
+.untimed-label {
+  font-style: italic;
 }

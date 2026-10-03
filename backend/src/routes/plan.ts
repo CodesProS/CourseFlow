@@ -1,8 +1,7 @@
 import { Router } from "express";
 import type { SearchCriteria } from "../models/SearchCriteria";
 import { courseRepository } from "../repositories/courseRepository";
-import { getAvailableCourses } from "../services/coursePlanner";
-import { rankCourses } from "../services/scoringService";
+import { selectCandidates } from "../services/coursePlanner";
 import { generateSchedules } from "../services/scheduleService";
 
 const router = Router();
@@ -30,9 +29,8 @@ router.post("/", (req, res) => {
             ? body.criteria
             : {};
 
-    const available = getAvailableCourses(courseRepository.listAll(), completed);
-    const ranked = rankCourses(available, criteria);
-    const schedules = generateSchedules(ranked, criteria, MAX_SCHEDULES);
+    const candidates = selectCandidates(courseRepository.listAll(), completed, criteria);
+    const schedules = generateSchedules(candidates, criteria, MAX_SCHEDULES);
 
     res.json({
         totalFound: schedules.length,

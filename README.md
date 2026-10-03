@@ -34,7 +34,7 @@ Backed by real UW-Madison data — course listings, prerequisites, meeting times
 │  (Vercel)           │                  │  (Render, Docker)    │
 │                     │ <────────────── │                      │
 │  TanStack Query     │                  │  Repository pattern  │
-│  react-select       │                  │  courses.json (54)   │
+│  react-select       │                  │  courses.json (4.6k) │
 └─────────────────────┘                  └──────────────────────┘
                                                    ▲
                                                    │ ETL at build time
@@ -76,13 +76,8 @@ That's it — the catalog is committed, no ingest step needed to run the app.
 
 If you want to extend the course list (add subjects, pull fresher upstream data):
 
-```bash
-cd backend
-git clone https://github.com/twangodev/uw-coursemap-data ../uw-coursemap-data
-npm run ingest       # writes data/courses.json
-```
-
-Edit `TARGET_SUBJECTS` in `src/scripts/ingest.ts` to control which departments are included.
+See [`backend/data/README.md`](backend/data/README.md) for the (sparse) clone of
+uw-coursemap-data and `npm run ingest`, which rewrites `data/courses.json`.
 
 ## Deployment
 

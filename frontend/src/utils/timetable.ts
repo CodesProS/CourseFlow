@@ -93,9 +93,10 @@ export function getCourseColors(courses: ScheduledCourse[]): Map<string, string>
     );
 }
 
+// Courses without listed times have no meetings, so they're left out.
 export function flattenScheduleMeetings(scheduledCourses: ScheduledCourse[]) {
     return scheduledCourses.flatMap((scheduledCourse) =>
-        scheduledCourse.section.meetings
+        (scheduledCourse.section?.meetings ?? [])
             .map((meeting) => ({
                 meeting,
                 scheduledCourse,

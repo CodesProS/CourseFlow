@@ -7,17 +7,20 @@ import { Course } from "../models/Course";
 import { ScheduledCourse } from "../models/Schedule";
 import { SearchCriteria } from "../models/SearchCriteria";
 import { courseRepository } from "../repositories/courseRepository";
-import { getAvailableCourses } from "../services/coursePlanner";
+import { selectCandidates } from "../services/coursePlanner";
 import { generateSchedules } from "../services/scheduleService";
 import {
     REQUIREMENT_POINTS,
     preferenceScore,
-    rankCourses,
     requirementsFilled,
 } from "../services/scoringService";
 import { canAddSection } from "../utils/scheduleUtils";
 
 const K = 50;
+
+// Exhaustive search is exponential, so compare on a smaller candidate set
+// than the API's 40.
+const CANDIDATES = 26;
 
 function scheduleScore(picks: ScheduledCourse[], criteria: SearchCriteria): number {
     let score = 0;
@@ -44,7 +47,8 @@ function bruteForce(courses: Course[], criteria: SearchCriteria) {
         if (credits > max) return;
         if (credits >= min) scores.push(scheduleScore(current, criteria));
         for (let i = start; i < courses.length; i++) {
-            for (const section of courses[i].sections) {
+            const options = courses[i].sections.length ? courses[i].sections : [null];
+            for (const section of options) {
                 if (!canAddSection(current, section)) continue;
                 current.push({ course: courses[i], section });
                 backtrack(i + 1, credits + courses[i].credits);
@@ -66,6 +70,15 @@ function time<T>(fn: () => T): [T, number] {
 
 const scenarios: { name: string; criteria: SearchCriteria }[] = [
     { name: "empty query (12-18 cr)", criteria: {} },
+    {
+        name: "CS major, AI + systems, 12-15 cr",
+        criteria: {
+            major: "Computer Sciences BS",
+            interests: ["AI", "systems"],
+            targetCreditsMin: 12,
+            targetCreditsMax: 15,
+        },
+    },
     {
         name: "humanities + ethnic studies, <=15 cr",
         criteria: {
@@ -89,11 +102,12 @@ const scenarios: { name: string; criteria: SearchCriteria }[] = [
 ];
 
 const all = courseRepository.listAll();
-const available = getAvailableCourses(all, new Set());
-console.log(`${available.length} eligible courses\n`);
+// A typical sophomore, so plenty of courses are unlocked.
+const completed = new Set(["COMPSCI200", "COMPSCI300", "MATH221", "MATH222", "ENGL120"]);
+console.log(`${all.length} catalog courses, ${CANDIDATES} candidates per scenario\n`);
 
 for (const { name, criteria } of scenarios) {
-    const ranked = rankCourses(available, criteria);
+    const ranked = selectCandidates(all, completed, criteria, CANDIDATES);
 
     const [brute, bruteMs] = time(() => bruteForce(ranked, criteria));
     const [memo, memoMs] = time(() => generateSchedules(ranked, criteria, K));

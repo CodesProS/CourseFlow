@@ -15,6 +15,7 @@ export default function ResultsHeader({
     onPrevious,
     onNext,
 }: ResultsHeaderProps) {
+    const untimedCount = schedule.courses.filter((c) => !c.section).length;
     return (
         <div className="results-header">
             <div>
@@ -26,6 +27,7 @@ export default function ResultsHeader({
                     <span>{schedule.courses.length} courses</span>
                     <span>{schedule.totalCredits} credits</span>
                     {schedule.score !== undefined && <span>Match score {schedule.score}</span>}
+                    {untimedCount > 0 && <span>{untimedCount} without listed times</span>}
                 </div>
             </div>
             <div className="results-nav">

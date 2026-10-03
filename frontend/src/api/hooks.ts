@@ -1,17 +1,17 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { api } from "./client";
 import type {
-    Course,
+    CourseSummary,
     CoursesMeta,
     PlanResponse,
     SearchCriteria,
 } from "../types";
 
-// GET /courses — full catalog. Rarely changes; cache aggressively.
+// GET /courses — code and name of every course. Rarely changes; cache aggressively.
 export function useCourses() {
     return useQuery({
         queryKey: ["courses"],
-        queryFn: () => api.get<Course[]>("/courses"),
+        queryFn: () => api.get<CourseSummary[]>("/courses"),
         staleTime: 1000 * 60 * 60, // 1 hour — catalog is static between ingests
     });
 }

@@ -14,3 +14,9 @@ export function formatCourseName(name: string): string {
         })
         .join(" ");
 }
+
+// "3 credits", or "~3 credits" when the catalog had no credit count.
+export function formatCredits(course: { credits: number; creditsEstimated?: boolean }, short = false): string {
+    const unit = short ? "cr" : course.credits === 1 ? "credit" : "credits";
+    return `${course.creditsEstimated ? "~" : ""}${course.credits} ${unit}`;
+}
