@@ -102,6 +102,38 @@ cd frontend
 
 Any push to `main` auto-deploys.
 
+### Backend → AWS (second deployment)
+
+The same Docker image also runs on AWS, defined in
+[`infra/aws/courseflow.yaml`](infra/aws/courseflow.yaml) (CloudFormation):
+
+```
+GitHub Actions ──OIDC──▶ ECR (image) ──SSM──▶ EC2 t3.micro: nginx ─▶ blue/green containers
+                                                   ▲                        │
+                                     CloudFront (HTTPS) ◀─ public           └─▶ CloudWatch Logs
+```
+
+- **EC2** runs the container behind nginx; the security group only admits
+  CloudFront, and there's no SSH. **CloudFront** provides HTTPS.
+- **CI/CD** ([`.github/workflows/ci-deploy.yml`](.github/workflows/ci-deploy.yml)):
+  every push/PR typechecks, tests, lints, builds, and checks the scheduler
+  against exhaustive search. Pushes to `main` then build the image, push it to
+  **ECR**, and roll it out through **SSM Run Command** using
+  [`infra/aws/remote-deploy.sh`](infra/aws/remote-deploy.sh): start the new
+  container in the idle slot, wait for `/health`, switch nginx, remove the old
+  one, so there's no downtime. GitHub authenticates with **OIDC**; no AWS keys
+  are stored in the repo.
+- **CloudWatch Logs** collects container output (`/courseflow/backend`).
+
+Create or update the stack:
+
+```bash
+aws cloudformation deploy --region us-east-1 --stack-name courseflow \
+  --template-file infra/aws/courseflow.yaml --capabilities CAPABILITY_NAMED_IAM
+```
+
+Tear it down with `aws cloudformation delete-stack --region us-east-1 --stack-name courseflow`.
+
 ## What I built
 
 - **ETL pipeline** — translates uw-coursemap's nested JSON (per-term grade data, AST-style prerequisite expressions, epoch-timestamped class meetings) into a flat, frontend-friendly catalog. Handles the session-to-weekly-pattern mismatch by grouping meetings by section and deduping on (day, start, end).
@@ -117,7 +149,7 @@ Any push to `main` auto-deploys.
 | Frontend   | React 19, TypeScript, Vite, TanStack Query, react-select |
 | Backend    | Express, TypeScript, Node 20                          |
 | Data       | uw-coursemap (ingested at build time)                 |
-| Hosting    | Render (API, Docker), Vercel (static frontend)        |
+| Hosting    | Render (API, Docker), Vercel (static frontend); AWS EC2 + CloudFront (second API deployment) |
 
 ## Roadmap
 
