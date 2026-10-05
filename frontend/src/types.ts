@@ -24,6 +24,7 @@ export type Course = {
     genEd?: string[];
     creditType?: string;
     prerequisites: string[];
+    prerequisiteTree?: PrereqNode; // absent: no course requirement
     prerequisiteText?: string; // the rule as UW words it
     sections: Section[]; // empty when meeting times aren't listed
     // Added by the ingest step. Optional because not every course has them.
@@ -31,6 +32,13 @@ export type Course = {
     avgGpa?: number;
     creditsEstimated?: boolean; // source had no credit count; 3 assumed
 };
+
+// A course code, a resolved non-course condition (true = assumed met,
+// false = can't be met through courses), or an AND/OR of children.
+export type PrereqNode =
+    | string
+    | boolean
+    | { op: "and" | "or"; children: PrereqNode[] };
 
 // Response item of GET /courses — just enough for the course picker.
 export type CourseSummary = Pick<Course, "code" | "name" | "aliases">;
@@ -55,6 +63,8 @@ export type SearchCriteria = {
     preferredTags?: string[];
     targetCreditsMin?: number;
     targetCreditsMax?: number;
+    lockedCourses?: string[]; // every schedule must include these
+    excludedCourses?: string[]; // never suggested
 };
 
 // Response shape of POST /plan

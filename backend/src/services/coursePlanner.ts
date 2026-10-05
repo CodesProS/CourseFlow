@@ -47,6 +47,10 @@ export const MAX_CANDIDATES = 40;
 /**
  * The courses the schedule search should consider: eligible, within the
  * difficulty cap, best matches first, at most `limit` of them.
+ *
+ * Locked courses are always included, even if they'd otherwise be filtered
+ * out (unmet prerequisites, too difficult): the student asked for them.
+ * Excluded courses never are.
  */
 export function selectCandidates(
     allCourses: Course[],
@@ -54,9 +58,19 @@ export function selectCandidates(
     criteria: SearchCriteria,
     limit: number = MAX_CANDIDATES
 ): Course[] {
+    const codesOf = (c: Course) => [c.code, ...(c.aliases ?? [])];
+    const lockedCodes = new Set(criteria.lockedCourses ?? []);
+    const excludedCodes = new Set(criteria.excludedCourses ?? []);
+    const isLocked = (c: Course) => codesOf(c).some((code) => lockedCodes.has(code));
+    const isExcluded = (c: Course) => codesOf(c).some((code) => excludedCodes.has(code));
+    const locked = allCourses.filter((c) => isLocked(c) && !isExcluded(c));
+
     const completed = expandCrossListed(allCourses, completedCourses);
     const eligible = getAvailableCourses(allCourses, completed).filter(
-        (c) => criteria.maxDifficulty === undefined || c.difficulty <= criteria.maxDifficulty,
+        (c) =>
+            !isLocked(c) &&
+            !isExcluded(c) &&
+            (criteria.maxDifficulty === undefined || c.difficulty <= criteria.maxDifficulty),
     );
-    return rankCourses(eligible, criteria).slice(0, limit);
+    return [...locked, ...rankCourses(eligible, criteria).slice(0, Math.max(0, limit - locked.length))];
 }

@@ -57,6 +57,10 @@ export function generateSchedules(
     const minCredits = criteria.targetCreditsMin ?? 12;
     const maxCredits = criteria.targetCreditsMax ?? 18;
     const n = courses.length;
+    const lockedCodes = new Set(criteria.lockedCourses ?? []);
+    const locked = courses.map((c) =>
+        [c.code, ...(c.aliases ?? [])].some((code) => lockedCodes.has(code)),
+    );
 
     const sectionMasks = buildSectionMasks(courses);
 
@@ -104,8 +108,8 @@ export function generateSchedules(
         const cached = memo.get(key);
         if (cached) return cached;
 
-        // Option 1: skip course i.
-        const candidates: Partial[] = [...solve(i + 1, credits, busy, covered)];
+        // Option 1: skip course i — unless it's locked in.
+        const candidates: Partial[] = locked[i] ? [] : [...solve(i + 1, credits, busy, covered)];
 
         // Option 2: take course i in any section that fits (or, with no
         // listed times, as-is).

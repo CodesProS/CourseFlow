@@ -7,4 +7,8 @@ export type SearchCriteria = {
     preferredTags?: string[];
     targetCreditsMin?: number;
     targetCreditsMax?: number;
+    // Courses the student definitely wants: every schedule must include them.
+    lockedCourses?: string[];
+    // Courses the student doesn't want suggested. Wins over a lock.
+    excludedCourses?: string[];
 };

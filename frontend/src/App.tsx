@@ -1,12 +1,13 @@
-import { useState } from "react";
-import type { ScheduledCourse, SearchCriteria } from "./types";
+import { useMemo, useState } from "react";
+import type { ScheduledCourse } from "./types";
 
 import SearchForm from "./components/SearchForm";
 import ResultsHeader from "./components/ResultsHeader";
 import ScheduleList from "./components/ScheduleList";
 import ScheduleGrid from "./components/ScheduleGrid";
 import CourseDetails from "./components/CourseDetails";
-import { usePlanMutation } from "./api/hooks";
+import CourseChoicesBar from "./components/CourseChoicesBar";
+import { useCourses, usePlanMutation, type PlanPayload } from "./api/hooks";
 import "./App.css";
 
 function EmptyState() {
@@ -44,7 +45,14 @@ function StatusPanel({ title, message, tone }: { title: string; message: string;
 export default function App() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedCourse, setSelectedCourse] = useState<ScheduledCourse | null>(null);
+  // Courses the student locked in (every schedule includes them) or
+  // excluded (never suggested). A course is in at most one list.
+  const [lockedCourses, setLockedCourses] = useState<string[]>([]);
+  const [excludedCourses, setExcludedCourses] = useState<string[]>([]);
+  // The last search, so locking a course can re-run it immediately.
+  const [lastPayload, setLastPayload] = useState<PlanPayload | null>(null);
   const planMutation = usePlanMutation();
+  const coursesQuery = useCourses();
   const schedules = planMutation.data?.schedules;
   const currentSchedule = schedules?.[currentIndex] ?? null;
 
@@ -53,10 +61,55 @@ export default function App() {
   const timedCount = currentSchedule?.courses.filter((c) => c.section).length ?? 0;
   const listFirst = currentSchedule !== null && timedCount * 2 < currentSchedule.courses.length;
 
-  const handleGenerate = (payload: { completedCourses: string[]; criteria: SearchCriteria }) => {
+  // What the student has taken, under every code a cross-listed course goes
+  // by, so the details dialog can tick off prerequisites.
+  const completedCourses = useMemo(() => {
+    const completed = new Set(lastPayload?.completedCourses ?? []);
+    for (const c of coursesQuery.data ?? []) {
+      const codes = [c.code, ...(c.aliases ?? [])];
+      if (codes.some((code) => completed.has(code))) codes.forEach((code) => completed.add(code));
+    }
+    return completed;
+  }, [lastPayload, coursesQuery.data]);
+
+  const plan = (payload: PlanPayload, locked: string[], excluded: string[]) => {
     setCurrentIndex(0);
-    planMutation.mutate(payload);
+    planMutation.mutate({
+      ...payload,
+      criteria: { ...payload.criteria, lockedCourses: locked, excludedCourses: excluded },
+    });
   };
+
+  const handleGenerate = (payload: PlanPayload) => {
+    setLastPayload(payload);
+    plan(payload, lockedCourses, excludedCourses);
+  };
+
+  // Locking or excluding a course re-runs the last search right away.
+  const updateChoices = (locked: string[], excluded: string[]) => {
+    setLockedCourses(locked);
+    setExcludedCourses(excluded);
+    if (lastPayload) plan(lastPayload, locked, excluded);
+  };
+
+  const toggleLock = (code: string) => {
+    if (lockedCourses.includes(code)) {
+      updateChoices(lockedCourses.filter((c) => c !== code), excludedCourses);
+    } else {
+      updateChoices([...lockedCourses, code], excludedCourses.filter((c) => c !== code));
+    }
+  };
+
+  const toggleExclude = (code: string) => {
+    if (excludedCourses.includes(code)) {
+      updateChoices(lockedCourses, excludedCourses.filter((c) => c !== code));
+    } else {
+      updateChoices(lockedCourses.filter((c) => c !== code), [...excludedCourses, code]);
+      // The course is leaving the schedule, so its details don't apply.
+      setSelectedCourse(null);
+    }
+  };
+  const lockedSet = new Set(lockedCourses);
 
   let results;
   if (planMutation.isPending) {
@@ -75,10 +128,23 @@ export default function App() {
     results = (
       <StatusPanel
         title="No schedules fit"
-        message="Try widening the credit range, raising max difficulty, or removing a requirement."
+        message={
+          lockedCourses.length > 0
+            ? "Your locked courses may clash with each other or not fit your credit range. Try unlocking one or widening the range."
+            : "Try widening the credit range, raising max difficulty, or removing a requirement."
+        }
       />
     );
   } else {
+    const courseList = (
+      <ScheduleList
+        schedule={currentSchedule}
+        onSelectCourse={setSelectedCourse}
+        lockedCourses={lockedSet}
+        onToggleLock={toggleLock}
+        onExclude={toggleExclude}
+      />
+    );
     results = (
       <>
         <ResultsHeader
@@ -90,13 +156,13 @@ export default function App() {
         />
         {listFirst ? (
           <>
-            <ScheduleList schedule={currentSchedule} onSelectCourse={setSelectedCourse} />
+            {courseList}
             <ScheduleGrid schedule={currentSchedule} onSelectCourse={setSelectedCourse} showUntimed={false} />
           </>
         ) : (
           <>
             <ScheduleGrid schedule={currentSchedule} onSelectCourse={setSelectedCourse} />
-            <ScheduleList schedule={currentSchedule} onSelectCourse={setSelectedCourse} />
+            {courseList}
           </>
         )}
       </>
@@ -117,10 +183,27 @@ export default function App() {
         <aside className="sidebar">
           <SearchForm onGenerate={handleGenerate} isSubmitting={planMutation.isPending} />
         </aside>
-        <section className="results">{results}</section>
+        <section className="results">
+          {(lockedCourses.length > 0 || excludedCourses.length > 0) && (
+            <CourseChoicesBar
+              lockedCourses={lockedCourses}
+              excludedCourses={excludedCourses}
+              onUnlock={toggleLock}
+              onUnexclude={toggleExclude}
+            />
+          )}
+          {results}
+        </section>
       </main>
 
-      <CourseDetails scheduledCourse={selectedCourse} onClose={() => setSelectedCourse(null)} />
+      <CourseDetails
+        scheduledCourse={selectedCourse}
+        onClose={() => setSelectedCourse(null)}
+        completedCourses={completedCourses}
+        lockedCourses={lockedSet}
+        onToggleLock={toggleLock}
+        onExclude={toggleExclude}
+      />
     </div>
   );
 }

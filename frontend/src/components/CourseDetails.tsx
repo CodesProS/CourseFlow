@@ -1,12 +1,19 @@
 import { useEffect, useRef } from "react";
-import type { ScheduledCourse } from "../types";
+import type { PrereqNode, ScheduledCourse } from "../types";
 import { formatCourseName, formatCredits } from "../utils/format";
 import { formatMeetings } from "../utils/timetable";
+import ExcludeIcon from "./ExcludeIcon";
+import LockIcon from "./LockIcon";
 
 type CourseDetailsProps = {
     // The course to show; null closes the dialog.
     scheduledCourse: ScheduledCourse | null;
     onClose: () => void;
+    // Every code the student has credit for (cross-listings expanded).
+    completedCourses: Set<string>;
+    lockedCourses: Set<string>;
+    onToggleLock: (code: string) => void;
+    onExclude: (code: string) => void;
 };
 
 const LEVELS: Record<number, string> = {
@@ -15,7 +22,15 @@ const LEVELS: Record<number, string> = {
     3: "Advanced",
 };
 
-export default function CourseDetails({ scheduledCourse, onClose }: CourseDetailsProps) {
+function isMet(node: PrereqNode, completed: Set<string>): boolean {
+    if (typeof node === "boolean") return node;
+    if (typeof node === "string") return completed.has(node);
+    return node.op === "and"
+        ? node.children.every((c) => isMet(c, completed))
+        : node.children.some((c) => isMet(c, completed));
+}
+
+export default function CourseDetails({ scheduledCourse, onClose, ...rest }: CourseDetailsProps) {
     const dialog = useRef<HTMLDialogElement>(null);
 
     useEffect(() => {
@@ -33,12 +48,24 @@ export default function CourseDetails({ scheduledCourse, onClose }: CourseDetail
                 if (e.target === e.currentTarget) onClose();
             }}
         >
-            {scheduledCourse && <Details {...scheduledCourse} onClose={onClose} />}
+            {scheduledCourse && <Details {...scheduledCourse} onClose={onClose} {...rest} />}
         </dialog>
     );
 }
 
-function Details({ course, section, onClose }: ScheduledCourse & { onClose: () => void }) {
+type DetailsProps = ScheduledCourse & Omit<CourseDetailsProps, "scheduledCourse">;
+
+function Details({
+    course,
+    section,
+    onClose,
+    completedCourses,
+    lockedCourses,
+    onToggleLock,
+    onExclude,
+}: DetailsProps) {
+    const locked = lockedCourses.has(course.code);
+
     return (
         <div className="course-details">
             <header className="course-details-header">
@@ -46,9 +73,29 @@ function Details({ course, section, onClose }: ScheduledCourse & { onClose: () =
                     <span className="course-details-code">{course.code}</span>
                     <h3>{formatCourseName(course.name)}</h3>
                 </div>
-                <button type="button" className="icon-btn" onClick={onClose} aria-label="Close">
-                    ×
-                </button>
+                <div className="course-details-actions">
+                    <button
+                        type="button"
+                        className={`lock-toggle${locked ? " locked" : ""}`}
+                        onClick={() => onToggleLock(course.code)}
+                        aria-pressed={locked}
+                    >
+                        <LockIcon locked={locked} />
+                        {locked ? "Locked in" : "Lock in"}
+                    </button>
+                    <button
+                        type="button"
+                        className="lock-toggle exclude"
+                        onClick={() => onExclude(course.code)}
+                        title="Never suggest this course"
+                    >
+                        <ExcludeIcon />
+                        Exclude
+                    </button>
+                    <button type="button" className="icon-btn" onClick={onClose} aria-label="Close">
+                        ×
+                    </button>
+                </div>
             </header>
 
             <div className="course-details-tags">
@@ -85,18 +132,63 @@ function Details({ course, section, onClose }: ScheduledCourse & { onClose: () =
 
             <section>
                 <h4>Prerequisites</h4>
-                {course.prerequisiteText ? (
-                    <p>{course.prerequisiteText}</p>
-                ) : course.prerequisites.length > 0 ? (
-                    <ul className="course-details-prereqs">
-                        {course.prerequisites.map((p) => (
-                            <li key={p}>{p}</li>
-                        ))}
-                    </ul>
-                ) : (
-                    <p className="muted">None</p>
+                <PrereqStatus tree={course.prerequisiteTree} completed={completedCourses} />
+                {course.prerequisiteTree !== undefined && typeof course.prerequisiteTree !== "boolean" && (
+                    <PrereqTree node={course.prerequisiteTree} completed={completedCourses} />
+                )}
+                {course.prerequisiteText && (
+                    <p className="prereq-source">As UW words it: {course.prerequisiteText}</p>
                 )}
             </section>
+        </div>
+    );
+}
+
+function PrereqStatus({ tree, completed }: { tree: PrereqNode | undefined; completed: Set<string> }) {
+    if (tree === undefined) {
+        return <p className="prereq-status met">✓ No course prerequisites</p>;
+    }
+    if (tree === false) {
+        return (
+            <p className="prereq-status unknown">
+                Needs instructor consent or a specific program, which CourseFlow can&apos;t check.
+            </p>
+        );
+    }
+    return isMet(tree, completed) ? (
+        <p className="prereq-status met">✓ You meet the prerequisites</p>
+    ) : (
+        <p className="prereq-status missing">Missing prerequisites. Check the courses without a ✓.</p>
+    );
+}
+
+// "All of" / "One of" groups with a ✓ on everything the student has.
+function PrereqTree({ node, completed }: { node: PrereqNode; completed: Set<string> }) {
+    if (typeof node === "boolean") return null; // folded out at ingest; not expected here
+
+    if (typeof node === "string") {
+        const met = completed.has(node);
+        return (
+            <span className={`prereq-course${met ? " met" : ""}`}>
+                <span className="prereq-mark" aria-hidden="true">{met ? "✓" : "○"}</span>
+                {node}
+                <span className="visually-hidden">{met ? " (completed)" : " (not completed)"}</span>
+            </span>
+        );
+    }
+
+    const met = isMet(node, completed);
+    return (
+        <div className={`prereq-group${met ? " met" : ""}`}>
+            <span className="prereq-group-label">
+                <span className="prereq-mark" aria-hidden="true">{met ? "✓" : "○"}</span>
+                {node.op === "and" ? "All of" : "One of"}
+            </span>
+            <div className="prereq-children">
+                {node.children.map((child, i) => (
+                    <PrereqTree key={i} node={child} completed={completed} />
+                ))}
+            </div>
         </div>
     );
 }

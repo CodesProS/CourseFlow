@@ -1,13 +1,24 @@
 import type { Schedule, ScheduledCourse } from "../types";
 import { formatCourseName, formatCredits } from "../utils/format";
 import { formatMeetings, getCourseColors } from "../utils/timetable";
+import ExcludeIcon from "./ExcludeIcon";
+import LockIcon from "./LockIcon";
 
 type ScheduleListProps = {
     schedule: Schedule;
     onSelectCourse: (course: ScheduledCourse) => void;
+    lockedCourses: Set<string>;
+    onToggleLock: (code: string) => void;
+    onExclude: (code: string) => void;
 };
 
-export default function ScheduleList({ schedule, onSelectCourse }: ScheduleListProps) {
+export default function ScheduleList({
+    schedule,
+    onSelectCourse,
+    lockedCourses,
+    onToggleLock,
+    onExclude,
+}: ScheduleListProps) {
     const colors = getCourseColors(schedule.courses);
     return (
         <div className="panel">
@@ -15,6 +26,7 @@ export default function ScheduleList({ schedule, onSelectCourse }: ScheduleListP
             <ul className="course-list">
                 {schedule.courses.map((scheduled) => {
                     const { course, section } = scheduled;
+                    const locked = lockedCourses.has(course.code);
                     return (
                         <li key={course.code} className={colors.get(course.code)}>
                             <button
@@ -38,6 +50,24 @@ export default function ScheduleList({ schedule, onSelectCourse }: ScheduleListP
                                 </span>
                                 <span className="course-credits">{formatCredits(course, true)}</span>
                                 <span className="course-chevron" aria-hidden="true">›</span>
+                            </button>
+                            <button
+                                type="button"
+                                className={`lock-btn${locked ? " locked" : ""}`}
+                                onClick={() => onToggleLock(course.code)}
+                                aria-pressed={locked}
+                                title={locked ? "Unlock: let schedules drop this course" : "Lock: keep this course in every schedule"}
+                            >
+                                <LockIcon locked={locked} />
+                            </button>
+                            <button
+                                type="button"
+                                className="lock-btn exclude"
+                                onClick={() => onExclude(course.code)}
+                                title="Exclude: never suggest this course"
+                                aria-label={`Exclude ${course.code}`}
+                            >
+                                <ExcludeIcon />
                             </button>
                         </li>
                     );
