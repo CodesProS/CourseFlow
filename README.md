@@ -28,7 +28,7 @@ Course data (listings, prerequisites, meeting times, descriptions, historical gr
 
 1. **Filter:** drop courses you've taken, courses whose prerequisite tree you don't satisfy, and courses above your max difficulty.
 2. **Score:** points for interest matches in a course's name, tags, or description ("AI" also matches "artificial intelligence"), courses in your major's department, and requirements you still need. Only real matches score, so a schedule can't win by piling up small courses.
-3. **Shortlist:** keep the 40 best-ranked courses (plus anything you locked).
+3. **Shortlist:** keep the 32 best-ranked courses (plus anything you locked).
 4. **Search:** find the top 50 schedules with no time clashes and credits in range.
 
 ### The scheduler: backtracking + memoization
@@ -43,7 +43,9 @@ Different picks often lead to the same situation (e.g. CS 400 or STAT 324, both 
 | Humanities + Ethnic Studies, ≤15 cr | 4.4 s | 60 ms | 73× |
 | Natural + Bio Science, 15–18 cr | 26.3 s | 396 ms | 66× |
 
-[`backend/src/scripts/benchmark.ts`](backend/src/scripts/benchmark.ts) runs both and checks the top-50 scores are identical; CI runs it on every push. On the full catalog a request takes ~10 ms.
+[`backend/src/scripts/benchmark.ts`](backend/src/scripts/benchmark.ts) runs both and checks the top-50 scores are identical; CI runs it on every push.
+
+**Bounding memory.** Each cached state holds up to 50 partial schedules, so broad queries over a big shortlist can create hundreds of thousands of states: 40 courses reached 550k states and ~400 MB, which crashed the 512 MB server. The search now has a state budget (100k); if a query exceeds it, it retries with a smaller shortlist (32 → 26 → 20). Worst case is now ~310 ms and ~100 MB; focused queries take ~10 ms.
 
 ### Prerequisite trees
 
@@ -159,7 +161,7 @@ aws cloudformation delete-stack --region us-east-1 --stack-name courseflow
 - **Meeting times:** the source data has them for only ~300 courses; the rest are suggested as "time not listed" and can't be checked for clashes.
 - **Credits:** estimated (3) for courses the source has no credit count for, marked "~3 cr".
 - **Lectures only:** labs and discussion sections aren't modeled yet.
-- **Shortlist:** the search is exact within the top 40 ranked courses, so ranking quality matters.
+- **Shortlist:** the search is exact within the top 32 ranked courses (fewer for very broad queries), so ranking quality matters.
 
 ## Roadmap
 

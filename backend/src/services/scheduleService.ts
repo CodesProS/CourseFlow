@@ -10,6 +10,19 @@ import {
 
 const DEFAULT_MAX_RESULTS = 50;
 
+// Cap on memoized states per search. Each state keeps up to `maxResults`
+// partial schedules, so this bounds memory: ~100k states is roughly 100 MB,
+// safe on a 512 MB instance. Broad queries over a large shortlist can blow
+// far past it (550k states, ~400 MB), which crashed the server.
+const DEFAULT_MAX_STATES = 100_000;
+
+export class SearchTooLargeError extends Error {
+    constructor(maxStates: number) {
+        super(`schedule search exceeded ${maxStates} states`);
+        this.name = "SearchTooLargeError";
+    }
+}
+
 // Picks are a persistent linked list so partial schedules cached in the
 // memo can be shared between parents without copying. `section` is null for
 // a course with no listed meeting times.
@@ -52,7 +65,8 @@ function popcount(x: number): number {
 export function generateSchedules(
     courses: Course[],
     criteria: SearchCriteria,
-    maxResults: number = DEFAULT_MAX_RESULTS
+    maxResults: number = DEFAULT_MAX_RESULTS,
+    maxStates: number = DEFAULT_MAX_STATES
 ): Schedule[] {
     const minCredits = criteria.targetCreditsMin ?? 12;
     const maxCredits = criteria.targetCreditsMax ?? 18;
@@ -142,6 +156,7 @@ export function generateSchedules(
             ? candidates.slice(0, maxResults)
             : candidates;
         memo.set(key, best);
+        if (memo.size > maxStates) throw new SearchTooLargeError(maxStates);
         return best;
     }
 

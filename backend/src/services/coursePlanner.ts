@@ -1,7 +1,9 @@
 import { Course } from "../models/Course";
 import { SearchCriteria } from "../models/SearchCriteria";
 import { canTakeCourse } from "../utils/prerequisites";
+import { Schedule } from "../models/Schedule";
 import { rankCourses } from "./scoringService";
+import { SearchTooLargeError, generateSchedules } from "./scheduleService";
 
 /**
  * Finds all courses that a student is currently eligible to enroll in.
@@ -40,9 +42,12 @@ export function expandCrossListed(allCourses: Course[], completed: Set<string>):
 }
 
 // The search is exponential in the number of courses, so it only considers
-// the best-ranked ones. Thousands of eligible courses would never finish;
-// 40 keeps a request well under a second.
-export const MAX_CANDIDATES = 40;
+// the best-ranked ones. Shortlist sizes to try, largest first: a bigger
+// shortlist can find better schedules, but if the search exceeds its state
+// budget we retry smaller. Measured worst cases on broad queries: 32 courses
+// ~330 ms / ~100 MB, 26 ~150 ms / ~80 MB, 20 ~40 ms / ~25 MB.
+export const SHORTLIST_SIZES = [32, 26, 20];
+export const MAX_CANDIDATES = SHORTLIST_SIZES[0];
 
 /**
  * The courses the schedule search should consider: eligible, within the
@@ -73,4 +78,27 @@ export function selectCandidates(
             (criteria.maxDifficulty === undefined || c.difficulty <= criteria.maxDifficulty),
     );
     return [...locked, ...rankCourses(eligible, criteria).slice(0, Math.max(0, limit - locked.length))];
+}
+
+/**
+ * The full planning pipeline: shortlist, then search. Falls back to smaller
+ * shortlists when a search would exceed its memory budget; the smallest runs
+ * unbounded since it stays small.
+ */
+export function planSchedules(
+    allCourses: Course[],
+    completedCourses: Set<string>,
+    criteria: SearchCriteria,
+    maxResults: number
+): Schedule[] {
+    for (const [i, size] of SHORTLIST_SIZES.entries()) {
+        const last = i === SHORTLIST_SIZES.length - 1;
+        const candidates = selectCandidates(allCourses, completedCourses, criteria, size);
+        try {
+            return generateSchedules(candidates, criteria, maxResults, last ? Infinity : undefined);
+        } catch (err) {
+            if (!(err instanceof SearchTooLargeError)) throw err;
+        }
+    }
+    return []; // unreachable: the last size has no budget
 }
