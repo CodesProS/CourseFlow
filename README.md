@@ -1,58 +1,84 @@
 # CourseFlow
 
-A course scheduler for UW-Madison students. Pick your interests, breadth requirements, and credit range — CourseFlow generates ranked, conflict-free schedules from the real course catalog.
+A course scheduler for UW–Madison students. Upload your transcript (or list the courses you've taken), say what you're interested in, and CourseFlow builds the best conflict-free schedules you're actually eligible for, from 4,586 real UW courses.
 
 **Live demo:** https://course-flow-three.vercel.app
-**API:** https://courseflow-api-zbc1.onrender.com/health
+**API:** https://courseflow-api-zbc1.onrender.com/health (Render) · https://db0xjuzfjsj0f.cloudfront.net/health (AWS)
 
-> **Heads up:** the backend runs on Render's free tier, which sleeps after 15 minutes of inactivity. First request after idle takes ~30–60s to cold-start; subsequent requests are snappy.
+> **Heads up:** the website's API runs on Render's free tier, which sleeps after 15 minutes of inactivity. The first request after idle takes ~30–60s; after that it's fast.
 
-![Screenshot](./docs/screenshot.png) <!-- TODO: drop a PNG here after deploy -->
+![Screenshot](./docs/screenshot.png)
 
 ---
 
 ## What it does
 
-Given:
-- Courses you've already completed
-- Interests, preferred tags, required breadth/GenEd
-- A credit range and max difficulty
+- **Transcript import:** drop in your UW-Madison transcript PDF. It's parsed in the browser (the file is never uploaded), you review what was found, and your completed courses, credits, and major fill in automatically.
+- **Prerequisite-aware:** only suggests courses you're eligible for, using UW's real AND/OR prerequisite rules and recognizing cross-listed courses (E C E 354 = COMP SCI 354).
+- **Ranked schedules:** returns the 50 best conflict-free schedules in your credit range, scored on your interests, your major, and the breadth/gen-ed requirements you still need.
+- **Weekly calendar + course list:** click any course for its description, credits, meeting times, and a prerequisite checklist showing what you've already met.
+- **Lock or exclude courses:** keep a course in every schedule, or never see it again; schedules regenerate instantly.
+- **Honest about data gaps:** courses without published meeting times show as "time not listed" instead of being dropped, and estimated credits are marked "~3 cr".
 
-CourseFlow:
-1. Filters the catalog to courses whose prerequisites you've satisfied
-2. Scores each course by how well it matches your preferences
-3. Runs a backtracking search for conflict-free schedules that hit your credit target
-4. Returns the top-ranked results
+Course data (listings, prerequisites, meeting times, descriptions, historical grades) comes from [uw-coursemap-data](https://github.com/twangodev/uw-coursemap-data) via a custom ETL script.
 
-Backed by real UW-Madison data — course listings, prerequisites, meeting times, and historical GPAs — extracted from the [uw-coursemap](https://github.com/twangodev/uw-coursemap) project via a custom ETL script.
+## How it works
+
+`POST /plan` runs a four-step pipeline:
+
+1. **Filter:** drop courses you've taken, courses whose prerequisite tree you don't satisfy, and courses above your max difficulty.
+2. **Score:** points for interest matches in a course's name, tags, or description ("AI" also matches "artificial intelligence"), courses in your major's department, and requirements you still need. Only real matches score, so a schedule can't win by piling up small courses.
+3. **Shortlist:** keep the 40 best-ranked courses (plus anything you locked).
+4. **Search:** find the top 50 schedules with no time clashes and credits in range.
+
+### The scheduler: backtracking + memoization
+
+The search walks the shortlist deciding *skip* or *take (in a section that fits)* for each course. Plain backtracking explodes: 33 courses give up to 1.8 million valid schedules, and finding the true top 50 by checking them all took up to **26 seconds**.
+
+Different picks often lead to the same situation (e.g. CS 400 or STAT 324, both MWF 9:55 and 3 credits), and from there the best way to finish is identical. So the search memoizes on what actually determines the future: the next course, credits so far, a bitmask of occupied time slots, and a bitmask of requirements already covered. Each state's top-50 completions are computed once and reused.
+
+| Scenario (33 courses) | Exhaustive | Memoized | Speedup |
+|---|---|---|---|
+| No preferences, 12–18 cr | 13.9 s | 154 ms | 90× |
+| Humanities + Ethnic Studies, ≤15 cr | 4.4 s | 60 ms | 73× |
+| Natural + Bio Science, 15–18 cr | 26.3 s | 396 ms | 66× |
+
+[`backend/src/scripts/benchmark.ts`](backend/src/scripts/benchmark.ts) runs both and checks the top-50 scores are identical; CI runs it on every push. On the full catalog a request takes ~10 ms.
+
+### Prerequisite trees
+
+UW prerequisites are AND/OR rules, e.g. CS 540: *(CS 300, 320 or 367) and (MATH 211, 217, 221 or 275)*. The ingest turns the dataset's syntax tree into a clean tree of course codes, handling bare numbers ("367" means the same subject as the previous course), courses written as text ("COMP SCI 367"), and non-course conditions (class standing is assumed met; instructor consent and program-only routes aren't). Eligibility is then a short recursive check: AND means all, OR means any.
+
+### Transcript parsing
+
+[`frontend/src/transcript`](frontend/src/transcript) uses **pdf.js** (in a Web Worker, loaded only when someone uploads) to get every text fragment with its page position. The UW transcript is a rotated landscape page with two columns of terms, so the parser rebuilds the table itself: rows by matching height, cells by the nearest column header. It handles transfer-credit blocks nested inside a term, wrapped titles and course numbers, in-progress courses, retakes, and generic transfer credit. Tested with Vitest on a synthetic transcript; no real student data is in the repo.
 
 ## Architecture
 
 ```
-┌─────────────────────┐   HTTPS/JSON    ┌──────────────────────┐
-│  React + Vite       │ ───────────────>│  Express + Node      │
-│  (Vercel)           │                  │  (Render, Docker)    │
-│                     │ <────────────── │                      │
-│  TanStack Query     │                  │  Repository pattern  │
-│  react-select       │                  │  courses.json (4.6k) │
-└─────────────────────┘                  └──────────────────────┘
-                                                   ▲
-                                                   │ ETL at build time
-                                          ┌────────┴───────────┐
-                                          │  uw-coursemap-data │
-                                          │  (GitHub submodule)│
-                                          └────────────────────┘
+┌──────────────────────┐   HTTPS/JSON    ┌───────────────────────────┐
+│  React + Vite (TS)   │ ──────────────▶ │  Express + Node (TS)       │
+│  Vercel              │ ◀────────────── │  Docker on Render and AWS  │
+│                      │                 │                            │
+│  TanStack Query      │                 │  catalog in memory (4.6k)  │
+│  pdf.js (transcript) │                 │  filter → score → search   │
+└──────────────────────┘                 └───────────────────────────┘
+                                                      ▲
+                                                      │ npm run ingest (offline)
+                                           ┌──────────┴──────────┐
+                                           │  uw-coursemap-data  │
+                                           └─────────────────────┘
 ```
 
-**Frontend** (`frontend/`) — React 19 + Vite + TypeScript. Uses TanStack Query to manage server state and `react-select` for the multi-select UI. No direct database or file access; it's a pure HTTP client of the backend.
+**Frontend** (`frontend/`): React 19, Vite, TypeScript. TanStack Query for server state, react-select for pickers, pdf.js for transcripts. A pure HTTP client of the backend.
 
-**Backend** (`backend/`) — Express + TypeScript on Node 20. Routes:
-- `GET /health` — liveness probe
-- `GET /courses` — full catalog
-- `GET /courses/meta` — distinct breadths, gen-eds, and tags for form autocompletes
-- `POST /plan` — runs the scoring + scheduling pipeline
+**Backend** (`backend/`): Express + TypeScript. Routes:
+- `GET /health`: liveness probe
+- `GET /courses`: code and name of every course (for the course picker)
+- `GET /courses/meta`: breadths, gen-eds, and the most common tags
+- `POST /plan`: runs the planning pipeline; accepts completed courses, interests, major, requirements, credit range, and locked/excluded courses
 
-Catalog data lives in `backend/data/courses.json`, produced by `backend/src/scripts/ingest.ts` from upstream uw-coursemap data. Repository pattern keeps the data source swappable (in-memory today; SQLite or Postgres later is a one-file change).
+The catalog (`backend/data/courses.json`) is committed and loaded into memory at startup: it's read-only and only changes when the ingest is re-run, so there's no database. A repository interface keeps the data source swappable.
 
 ## Running locally
 
@@ -70,42 +96,34 @@ npm install
 npm run dev          # http://localhost:5173
 ```
 
-That's it — the catalog is committed, no ingest step needed to run the app.
+The catalog is committed, so no ingest step is needed to run the app.
+
+Checks:
+
+```bash
+cd frontend && npm test                               # transcript parser tests
+cd backend && npx ts-node src/scripts/benchmark.ts    # scheduler vs. exhaustive search
+```
 
 ### Regenerating the catalog
 
-If you want to extend the course list (add subjects, pull fresher upstream data):
-
-See [`backend/data/README.md`](backend/data/README.md) for the (sparse) clone of
-uw-coursemap-data and `npm run ingest`, which rewrites `data/courses.json`.
+See [`backend/data/README.md`](backend/data/README.md) for the sparse clone of uw-coursemap-data and `npm run ingest`, which rewrites `data/courses.json` and `data/subjects.json`.
 
 ## Deployment
 
-### Backend → Render.com
-
-Render reads the `backend/Dockerfile` directly — no extra config file needed.
-
-1. Sign up at https://render.com with GitHub.
-2. **New +** → **Web Service** → connect the CourseFlow repo.
-3. Set **Root Directory** to `backend`, **Runtime** to *Docker*, **Instance Type** to *Free*.
-4. Add env vars: `NODE_ENV=production`, `PORT=3001`.
-5. Deploy. After the frontend is live, add `CORS_ORIGIN=https://<your-vercel-url>` to trigger an auto-redeploy.
+Every push to `main` deploys everywhere: Vercel and Render via their GitHub integrations, AWS via GitHub Actions.
 
 ### Frontend → Vercel
 
-```bash
-cd frontend
-# Easiest: connect the GitHub repo at https://vercel.com/new and point it at frontend/
-# Then in Vercel → Project Settings → Environment Variables, set:
-#   VITE_API_BASE_URL = https://<your-render-app>.onrender.com
-```
+Connect the repo at https://vercel.com/new with `frontend/` as the root, and set `VITE_API_BASE_URL` to the API URL.
 
-Any push to `main` auto-deploys.
+### Backend → Render
 
-### Backend → AWS (second deployment)
+Render builds `backend/Dockerfile` directly: **Web Service**, root directory `backend`, runtime *Docker*, env vars `NODE_ENV=production`, `PORT=3001`, `CORS_ORIGIN=https://<your-vercel-url>`.
 
-The same Docker image also runs on AWS, defined in
-[`infra/aws/courseflow.yaml`](infra/aws/courseflow.yaml) (CloudFormation):
+### Backend → AWS
+
+The same image also runs on AWS, defined in [`infra/aws/courseflow.yaml`](infra/aws/courseflow.yaml) (CloudFormation):
 
 ```
 GitHub Actions ──OIDC──▶ ECR (image) ──SSM──▶ EC2 t3.micro: nginx ─▶ blue/green containers
@@ -113,50 +131,42 @@ GitHub Actions ──OIDC──▶ ECR (image) ──SSM──▶ EC2 t3.micro: 
                                      CloudFront (HTTPS) ◀─ public           └─▶ CloudWatch Logs
 ```
 
-- **EC2** runs the container behind nginx; the security group only admits
-  CloudFront, and there's no SSH. **CloudFront** provides HTTPS.
-- **CI/CD** ([`.github/workflows/ci-deploy.yml`](.github/workflows/ci-deploy.yml)):
-  every push/PR typechecks, tests, lints, builds, and checks the scheduler
-  against exhaustive search. Pushes to `main` then build the image, push it to
-  **ECR**, and roll it out through **SSM Run Command** using
-  [`infra/aws/remote-deploy.sh`](infra/aws/remote-deploy.sh): start the new
-  container in the idle slot, wait for `/health`, switch nginx, remove the old
-  one, so there's no downtime. GitHub authenticates with **OIDC**; no AWS keys
-  are stored in the repo.
+- **EC2** runs the container behind nginx; the security group only admits CloudFront, and there's no SSH. **CloudFront** provides HTTPS.
+- **CI/CD** ([`.github/workflows/ci-deploy.yml`](.github/workflows/ci-deploy.yml)): every push/PR typechecks, tests, lints, builds, and checks the scheduler against exhaustive search. Pushes to `main` then build the image, push it to **ECR**, and roll it out through **SSM Run Command** using [`infra/aws/remote-deploy.sh`](infra/aws/remote-deploy.sh): start the new container in the idle slot, wait for `/health`, switch nginx, then remove the old one, so there's no downtime. GitHub authenticates with **OIDC**; no AWS keys are stored anywhere in GitHub.
 - **CloudWatch Logs** collects container output (`/courseflow/backend`).
 
-Create or update the stack:
-
 ```bash
+# Create or update the stack
 aws cloudformation deploy --region us-east-1 --stack-name courseflow \
   --template-file infra/aws/courseflow.yaml --capabilities CAPABILITY_NAMED_IAM
+
+# Tear it down
+aws cloudformation delete-stack --region us-east-1 --stack-name courseflow
 ```
-
-Tear it down with `aws cloudformation delete-stack --region us-east-1 --stack-name courseflow`.
-
-## What I built
-
-- **ETL pipeline** — translates uw-coursemap's nested JSON (per-term grade data, AST-style prerequisite expressions, epoch-timestamped class meetings) into a flat, frontend-friendly catalog. Handles the session-to-weekly-pattern mismatch by grouping meetings by section and deduping on (day, start, end).
-- **Scoring heuristic** — combines tag match, breadth/gen-ed coverage, and difficulty fit.
-- **Conflict-free schedule backtracker** — generates combinations that hit the target credit range without overlapping class times.
-- **Clean client/server split** — frontend and backend deploy independently; types duplicated at the API boundary instead of imported across the wire.
-- **Env-driven config** — `VITE_API_BASE_URL`, `CORS_ORIGIN`, `PORT` all externalized so local dev and production share the same code.
 
 ## Tech stack
 
-| Layer      | Tools                                                |
-|------------|-------------------------------------------------------|
-| Frontend   | React 19, TypeScript, Vite, TanStack Query, react-select |
-| Backend    | Express, TypeScript, Node 20                          |
-| Data       | uw-coursemap (ingested at build time)                 |
-| Hosting    | Render (API, Docker), Vercel (static frontend); AWS EC2 + CloudFront (second API deployment) |
+| Layer | Tools |
+|---|---|
+| Frontend | React 19, TypeScript, Vite, TanStack Query, react-select, pdf.js |
+| Backend | Node, Express, TypeScript |
+| Data | uw-coursemap-data, ingested offline into a committed JSON catalog |
+| Testing / CI | Vitest, scheduler benchmark, ESLint, GitHub Actions |
+| Hosting | Vercel (frontend), Render (API), AWS EC2 + ECR + CloudFront + CloudWatch (API, via CloudFormation) |
+
+## Known limitations
+
+- **Meeting times:** the source data has them for only ~300 courses; the rest are suggested as "time not listed" and can't be checked for clashes.
+- **Credits:** estimated (3) for courses the source has no credit count for, marked "~3 cr".
+- **Lectures only:** labs and discussion sections aren't modeled yet.
+- **Shortlist:** the search is exact within the top 40 ranked courses, so ranking quality matters.
 
 ## Roadmap
 
-- Vitest suite covering scoring, prerequisite unlocking, and the schedule backtracker
-- GPA-based grade-boost signal in scoring (data is already ingested)
-- Persistent user profiles (SQLite behind the existing `CourseRepository` interface)
-- Cap the backtracker's internal search (currently hits a slice limit in the response, but can still explode internally on permissive queries)
+- Live section times from UW's Course Search & Enroll, so every course can go on the calendar
+- Labs and discussion sections alongside lectures
+- Saved schedules and user accounts (the point where a database earns its place)
+- Meaning-based interest matching instead of keywords
 
 ## License
 
